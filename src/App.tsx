@@ -1,16 +1,33 @@
 
-import DashboardLayout from './components/layouts/DashboardLayout'
+import { BrowserRouter, useRoutes } from 'react-router'
 import './styles/App.css'
+import { protectedRoutes, publicRoutes } from './routes';
+import ProtectedRoute from './pages/ProtectedRoute';
+
+
+function AppRoutes() {
+  const routes = useRoutes([
+    {
+      element: <ProtectedRoute />,
+      children: protectedRoutes,
+    },
+    ...publicRoutes,
+  ]);
+
+  return routes;
+}
+
+
 
 function App() {
  
 
   return (
     <>
-      <div > 
-        <DashboardLayout />
+      <BrowserRouter > 
+       <AppRoutes/>
    
-      </div>
+      </BrowserRouter>
     </>
   )
 }
