@@ -35,37 +35,37 @@ const data = {
   navMain: [
     {
       title: "لوحة التحكم",
-      url: "#",
+      url: "/dashboard",
       icon: LayoutDashboard,
     },
     {
       title: "الكورسات",
-      url: "#",
+      url: "/courses",
       icon: BookOpen,
     },
     {
       title: "المدرسين",
-      url: "#",
+      url: "/teachers",
       icon: Users,
     },
     {
       title: "الطلبات",
-      url: "#",
+      url: "/orders",
       icon: ShoppingCart,
     },
     {
       title: "الطلاب",
-      url: "#",
+      url: "/students",
       icon: GraduationCap,
     },
     {
       title: "الموظفين",
-      url: "#",
+      url: "/employees",
       icon: Briefcase,
     },
     {
       title: "الإعدادات",
-      url: "#",
+      url: "/settings",
       icon: Settings,
     },
   ],

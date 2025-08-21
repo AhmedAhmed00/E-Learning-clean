@@ -2,6 +2,13 @@
 import { Navigate } from "react-router";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import Courses from "./pages/Courses";
+import Teachers from "./pages/Teachers";
+import Orders from "./pages/Orders";
+import Students from "./pages/Students";
+import Employees from "./pages/EmployeesAndRoles";
+import Login from "./pages/Login";
+
 
 // Lazy imports
 
@@ -14,13 +21,18 @@ const protectedRoutes = [
     children: [
       { index: true, element: <Navigate replace to="dashboard" /> },
       { path: "dashboard", element: <Dashboard /> },
+      { path: "courses", element: <Courses /> },
+      { path: "teachers", element: <Teachers /> },
+      { path: "orders", element: <Orders /> },
+      { path: "students", element: <Students /> },
+      { path: "employees", element: <Employees /> },
     
     ],
   },
 ];
 
 const publicRoutes = [
-  { path: "login", element: <div>test</div> },
+  { path: "login", element: <Login/> },
 
 ];
 

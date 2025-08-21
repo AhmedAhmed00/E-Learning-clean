@@ -1,12 +1,15 @@
+import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
 interface HeadingProps {
   title: string;
   desc?: string;
   icon: LucideIcon;
+  titleSize?:string;
+  descSize?:string
 }
 
-export default function Heading({ title, desc, icon: Icon }: HeadingProps) {
+export default function Heading({ title, desc, icon: Icon , titleSize="",descSize="" }: HeadingProps) {
   return (
     <div className="flex items-center px-6 py-4 ">
       <div className="flex items-center gap-3 space-x-reverse">
@@ -14,9 +17,9 @@ export default function Heading({ title, desc, icon: Icon }: HeadingProps) {
           <Icon className="h-6 w-6 text-white" />
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-[18px] font-bold text-black">{title}</span>
+          <span className={cn("text-[18px] font-bold text-black" , titleSize)}>{title}</span>
           {desc && (
-            <div className="text-[14px] text-slate-700 dark:text-gray-400">
+            <div className={cn("text-[14px] text-slate-700 dark:text-gray-400",descSize)}>
               {desc}
             </div>
           )}

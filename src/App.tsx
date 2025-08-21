@@ -3,7 +3,18 @@ import { BrowserRouter, useRoutes } from 'react-router'
 import './styles/App.css'
 import { protectedRoutes, publicRoutes } from './routes';
 import ProtectedRoute from './pages/ProtectedRoute';
+import AuthProvider from './context/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from "@/components/ui/sonner"
 
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30 * 1000,
+    },
+  },
+});
 
 function AppRoutes() {
   const routes = useRoutes([
@@ -24,10 +35,18 @@ function App() {
 
   return (
     <>
-      <BrowserRouter > 
+     <QueryClientProvider client={queryClient}>
+      <Toaster />
+          <BrowserRouter > 
+      <AuthProvider  > 
        <AppRoutes/>
+        
+      </AuthProvider>
    
       </BrowserRouter>
+      
+     </QueryClientProvider>
+  
     </>
   )
 }
