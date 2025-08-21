@@ -1158,7 +1158,8 @@ function FileUploadItemMetadata(props: FileUploadItemMetadataProps) {
               size === "sm" && "font-normal text-[13px] leading-snug",
             )}
           >
-            {itemContext.fileState.file.name}
+            {itemContext.fileState.file.name.length <30 ? itemContext.fileState.file.name :itemContext.fileState.file.name.substring(0,30) + "...." }
+           
           </span>
           <span
             id={itemContext.sizeId}

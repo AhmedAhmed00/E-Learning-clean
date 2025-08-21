@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form"
 
 import { Input } from "@/components/ui/input"
-import { PlusIcon } from "lucide-react"
+import { Loader2, PlusIcon } from "lucide-react"
 
 import {
   Select,
@@ -36,6 +36,11 @@ import {
 
 import PhoneInput from "react-phone-input-2"
 import "react-phone-input-2/lib/style.css"
+import usePost from "@/hooks/usePost"
+import { employeesServices } from "@/data/api"
+import { FileUploadValidationDemo } from "./Files"
+import { prepareFormData } from "@/lib/helpers"
+import { useState } from "react"
 
 // ✅ 1. Schema
 const userSchema = z.object({
@@ -44,7 +49,11 @@ const userSchema = z.object({
   email: z.string().email("بريد إلكتروني غير صالح"),
   phone: z.string().min(5, "أدخل رقم هاتف صحيح"),
   password: z.string().min(4, "كلمة المرور قصيرة جدًا"),
+    image: z.instanceof(File,{error:"صورة الموظف مطلوبة"}),
+  
 })
+
+
 
 type UserFormValues = z.infer<typeof userSchema>
 
@@ -56,6 +65,14 @@ const groups = [
 ]
 
 export function EmployeeForm() {
+    const [openModal, setOpenModal] = useState(false);
+  
+  
+  const {mutate:addNewEmployee ,isPending} = usePost({ 
+    service:employeesServices.create,
+    key:"employees", 
+    resource:"الموظف"
+  })
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -64,15 +81,19 @@ export function EmployeeForm() {
       email: "",
       phone: "",
       password: "",
+      image:undefined
     },
   })
 
   function onSubmit(values: UserFormValues) {
-    console.log("User Data:", values)
+    const formData = prepareFormData(values)
+    addNewEmployee(formData)
   }
 
+  
+  
   return (
-    <Dialog>
+    <Dialog onOpenChange={setOpenModal} open={openModal}>
       <DialogTrigger asChild>
         <Button style={{ cursor: "pointer" }} className="text-[16px] mx-8">
           <PlusIcon className="mr-2" />
@@ -180,6 +201,12 @@ export function EmployeeForm() {
                 </FormItem>
               )}
             />
+            
+                 <FileUploadValidationDemo
+                            title="صورة الموظف"
+                            control={form.control}
+                            name="image"
+                          />
 
             <DialogFooter>
               <DialogClose asChild>
@@ -187,7 +214,16 @@ export function EmployeeForm() {
                   إلغاء
                 </Button>
               </DialogClose>
-              <Button type="submit">حفظ المستخدم</Button>
+               <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    جاري إضافة الموظف
+                  </>
+                ) : (
+                  "إضافة موظف"
+                )}
+              </Button>{" "}
             </DialogFooter>
           </form>
         </Form>

@@ -22,6 +22,7 @@ interface UsePostReturn<TVariables, TResponse> {
   isErrorAdding: boolean;
   data?: TResponse;
   addingStatus: "idle" | "loading" | "error" | "success";
+  isPending: boolean;
 }
 
 export default function usePost<TVariables = unknown, TResponse = unknown>({
@@ -41,7 +42,7 @@ export default function usePost<TVariables = unknown, TResponse = unknown>({
   } = useMutation<TResponse, unknown, TVariables>({
     mutationFn: service,
     onMutate: () => {
-      loadingToastId = toast.loading(`Adding ${resource}...`);
+      loadingToastId = toast.loading(`يتم إضافة ${resource}...`);
     },
     onSuccess: () => {
       toast.dismiss(loadingToastId);
@@ -52,7 +53,7 @@ export default function usePost<TVariables = unknown, TResponse = unknown>({
       toast.dismiss(loadingToastId);
       const errMsg = err?.statusText
         ? `${err.statusText}\nCannot add ${resource}`
-        : `Cannot add ${resource}`;
+        : `تعذر إضافة ${resource}`;
       toast.error(errMsg);
     },
   });

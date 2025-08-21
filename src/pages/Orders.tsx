@@ -13,6 +13,8 @@ import Heading from "@/components/shared/Heading";
 import TableOperations from "@/components/shared/table/TableOperations";
 import RoundedCard from "@/components/shared/rounded-card";
 import CustomTable from "@/components/shared/table/CustomTable";
+import { useFetch } from "@/hooks/useFetch";
+import { ordersServices } from "@/data/api";
 
 const ordersTableColumns = [
   {
@@ -41,36 +43,24 @@ const ordersTableColumns = [
   },
 ];
 
-const data = {
-  count: 30,
-  next: true,
-  previous: false,
-  results: [
-    {
-      name: "Order 1",
-      vendorName: "Vendor 1",
-      customerName: "Customer 1",
-      driverName: "Driver 1",
-      amount: 100,
-      status: "Pending",
-    },
-    {
-      name: "Order 2",
-      vendorName: "Vendor 2",
-      customerName: "Customer 2",
-      driverName: "Driver 2",
-      amount: 200,
-      status: "Completed",
-    },
-  ],
-};
 
 // 📊 بيانات الطلبات
-const orderStats = [
+
+export default function Orders() {
+  
+  const { data,isError,isFetching,isLoading} = useFetch({ 
+    service:ordersServices.getAll, 
+    key:"orders"
+  })
+  
+  
+  
+  
+  const orderStats = [
   {
     id: 1,
     title: "بانتظار المراجعة",
-    number: 45,
+    number: data?.stats?.total_pending,
     icon: ClipboardList,
     iconBg: "bg-yellow-500",
     desc: "طلبات تحتاج مراجعة",
@@ -78,7 +68,7 @@ const orderStats = [
   {
     id: 2,
     title: "موافق عليها",
-    number: 120,
+    number: data?.stats?.total_accepted,
     icon: CheckCircle2,
     iconBg: "bg-green-500",
     desc: "طلبات تمت الموافقة عليها",
@@ -86,7 +76,8 @@ const orderStats = [
   {
     id: 3,
     title: "مرفوضة",
-    number: 12,
+        number: data?.stats?.total_declined,
+
     icon: XCircle,
     iconBg: "bg-red-500",
     desc: "طلبات تم رفضها",
@@ -94,14 +85,22 @@ const orderStats = [
   {
     id: 4,
     title: "إجمالي الإيرادات",
-    number: "$12,540",
+        number: data?.stats?.total_profit,
     icon: DollarSign,
     iconBg: "bg-blue-500",
     desc: "القيمة الكلية من المبيعات",
   },
 ];
 
-export default function Orders() {
+  
+  
+  
+  
+  
+  
+  
+  
+  
   return (
     <>
       {/* 🏷️ الهيدر */}
@@ -149,15 +148,7 @@ export default function Orders() {
         loading={false}
         modalName="orders"
         columns={ordersTableColumns}
-        data={data.results.map((item, index) => ({
-          id: index.toString(),
-          name: item.name,
-          vendorName: item.vendorName,
-          customerName: item.customerName,
-          driverName: item.driverName,
-          amount: item.amount,
-          status: item.status,
-        }))}
+        data={data?.data?.results || []}
       />
     </>
   );
