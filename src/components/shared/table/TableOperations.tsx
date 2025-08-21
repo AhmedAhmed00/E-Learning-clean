@@ -28,7 +28,7 @@ export default function TableOperations({
   filters = [],
 }: {
   resourse: string
-  filters: FilterConfig[]
+  filters?: FilterConfig[]
 }) {
   const [searchParams, setSearchParams] = useSearchParams()
 

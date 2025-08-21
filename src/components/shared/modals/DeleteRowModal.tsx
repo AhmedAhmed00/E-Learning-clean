@@ -16,6 +16,7 @@ import { Trash2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface IDeleteRowModalProps {
   id: string;
@@ -48,9 +49,9 @@ export default function DeleteRowModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button>
+        <Button>
           <Trash2 size={16} className="text-gray" />
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-[90%] max-w-[320px] gap-4 md:w-full md:gap-6">
         <DialogHeader className="gap-4 md:gap-6">

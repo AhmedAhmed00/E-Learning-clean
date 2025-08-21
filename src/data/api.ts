@@ -164,9 +164,11 @@ export function createService<T>(baseUrl: string) {
 export const COURSES = `/course/employee-manage/`;
 export const EMPLOYEES = `/employee/manage/`;
 export const STUDENTS = `/students/manage/`;
+export const TEACHERS = `/instructor/manage/`;
 
 export const coursesServices = createService(COURSES);
 export const employeesServices = createService(EMPLOYEES);
 export const studentsServices = createService(STUDENTS);
+export const tachersServices = createService(TEACHERS);
 
 export default BASEURL;
