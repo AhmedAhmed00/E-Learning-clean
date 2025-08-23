@@ -23,6 +23,7 @@ import {
   Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router";
 
 
 
@@ -111,10 +112,15 @@ export function TeacherCard({ teacher }: { teacher: any }) {
               <Pencil className="w-4 h-4" />
             </Button>
           </div>
-          <Button variant="secondary" className="flex items-center gap-2">
+          <Link to={`${teacher?.id}`} > 
+          
+             <Button variant="secondary" className="flex items-center gap-2">
             <Eye className="w-4 h-4" />
             عرض التفاصيل
           </Button>
+          
+          </Link>
+       
         </CardFooter>
       </Card>
 

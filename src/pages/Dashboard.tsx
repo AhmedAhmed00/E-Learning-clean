@@ -1,5 +1,3 @@
-"use client";
-
 import Heading from "@/components/shared/Heading";
 import RoundedCard from "@/components/shared/rounded-card";
 import { BookOpen, Eye, ListStartIcon, Users } from "lucide-react";
@@ -21,6 +19,7 @@ export default function Dashboard() {
         desc="نظرة شاملة علي اداء منصتك التعليمية"
         icon={ListStartIcon}
       />
+      
 
       <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-2">
         {dashboardCards.map((card, i) => (

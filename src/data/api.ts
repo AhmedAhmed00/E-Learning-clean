@@ -166,11 +166,13 @@ export const EMPLOYEES = `/employee/manage/`;
 export const STUDENTS = `/students/manage/`;
 export const TEACHERS = `/instructor/manage/`;
 export const ORDERS = `/course/student-orders-employee/`;
+export const ROLES = `/test/`;
 
 export const coursesServices = createService(COURSES);
 export const employeesServices = createService(EMPLOYEES);
 export const studentsServices = createService(STUDENTS);
 export const tachersServices = createService(TEACHERS);
 export const ordersServices = createService(ORDERS);
+export const rolesServices = createService(ROLES);
 
 export default BASEURL;

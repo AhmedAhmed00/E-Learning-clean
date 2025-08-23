@@ -4,6 +4,7 @@ import {
 import Heading from "@/components/shared/Heading";
 import { EmployeesAndRolesTabs } from "@/features/employees-and-roles/components/EmployeesAndRolesTabs";
 import { EmployeeForm } from "@/components/forms/EmployeeForm";
+import { RoleForm } from "@/components/forms/RoleForm";
 
 // 📋 أعمدة جدول الموظفين
 export default function Employees() {
@@ -17,8 +18,11 @@ export default function Employees() {
           desc="إدارة الموظفين والوظائف والصلاحيات"
           icon={UserRound}
         />
-
+<div className="flex "> 
+  
          <EmployeeForm />
+         <RoleForm />
+</div>
       </div>
 
       {/* 🔎 عمليات علي الجدول */}

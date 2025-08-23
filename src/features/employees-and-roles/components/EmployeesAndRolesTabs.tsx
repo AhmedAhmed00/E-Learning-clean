@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/tabs"
 import { JobCard } from "./JobCard";
 import { useFetch } from "@/hooks/useFetch";
-import { employeesServices } from "@/data/api";
+import BASEURL, { apiRequest, employeesServices, rolesServices } from "@/data/api";
 
 const employeesCols = [
   { label: "الموظف", key: "user_name" },
@@ -21,43 +21,26 @@ const employeesCols = [
 
 
 // 📊 بيانات وهمية للوظائف
-const fakeRoles = [
-  {
-    id: 1,
-    title: "مدير المحتوى",
-    description: "إدارة الكورسات والمحتوى التعليمي",
-    employeesCount: 2,
-    permissions: ["إدارة الكورسات", "إدارة المدرسين", "عرض التقارير"],
-  },
-  {
-    id: 2,
-    title: "مسؤول الدعم",
-    description: "الرد على استفسارات المستخدمين ومتابعة المشاكل",
-    employeesCount: 1,
-    permissions: ["إدارة التذاكر", "التواصل مع العملاء"],
-  },
-  {
-    id: 3,
-    title: "المسؤول المالي",
-    description: "إدارة المدفوعات والفواتير والاشتراكات",
-    employeesCount: 1,
-    permissions: ["إدارة الفواتير", "عرض التقارير المالية"],
-  },
-];
+
 
 
 export function EmployeesAndRolesTabs() {
   
-  const { data:{results,count}={}} = useFetch({ 
+  const { data:{results:empRes}={}} = useFetch({ 
     service:employeesServices.getAll, 
     key:"employees"
   })
-  console.log(results,count)
+const {data:{results}={}} = useFetch({ 
+  service:() => apiRequest("get",`${BASEURL}/employee/groups-with-permissions/`), 
+  key:"job-roles"
+  
+})
+  console.log(results, "ddddddddddddddd")
   
   
   return (
     <div className="flex w-full flex-col gap-6">
-      <Tabs className="w-full" defaultValue="employees">
+      <Tabs className="w-full" defaultValue="roles">
         <TabsList>
           <TabsTrigger value="employees">الموظفين</TabsTrigger>
           <TabsTrigger value="roles">الوظائف</TabsTrigger>
@@ -73,14 +56,14 @@ export function EmployeesAndRolesTabs() {
             actions={['view']}
             key={"employees"}
             columns={employeesCols}
-            data={results||[]}
+            data={empRes||[]}
             modalName={"employees"}
           />
         </TabsContent>
 
         <TabsContent value="roles">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fakeRoles.map((role) => (
+            {results?.map((role) => (
               <JobCard key={role.id} role={role} />
             ))}
           </div>

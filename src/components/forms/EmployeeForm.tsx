@@ -95,7 +95,7 @@ export function EmployeeForm() {
   return (
     <Dialog onOpenChange={setOpenModal} open={openModal}>
       <DialogTrigger asChild>
-        <Button style={{ cursor: "pointer" }} className="text-[16px] mx-8">
+        <Button style={{ cursor: "pointer" }} className="text-[16px] ">
           <PlusIcon className="mr-2" />
           إضافة موظف جديد
         </Button>
