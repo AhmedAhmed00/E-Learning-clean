@@ -166,7 +166,7 @@ export const EMPLOYEES = `/employee/manage/`;
 export const STUDENTS = `/students/manage/`;
 export const TEACHERS = `/instructor/manage/`;
 export const ORDERS = `/course/student-orders-employee/`;
-export const ROLES = `/test/`;
+export const ROLES = `/employee/groups-with-permissions/`;
 
 export const coursesServices = createService(COURSES);
 export const employeesServices = createService(EMPLOYEES);

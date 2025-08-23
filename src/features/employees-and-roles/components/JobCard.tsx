@@ -94,7 +94,8 @@ export function JobCard({ role }: JobCardProps) {
         <div className="flex justify-end gap-3 pt-3 border-t border-gray-100">
           
           <RoleForm  defaultValues={{name:role?.name,
-            permissions:role?.permissions
+            permissions:role?.permissions,
+            id:role?.id
           }}/>
           
           

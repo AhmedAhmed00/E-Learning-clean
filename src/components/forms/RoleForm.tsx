@@ -29,6 +29,7 @@ import { Edit, Loader2, PlusIcon } from "lucide-react"
 import usePost from "@/hooks/usePost"
 import BASEURL, { apiRequest, rolesServices } from "@/data/api"
 import { useFetch } from "@/hooks/useFetch";
+import useUpdate from "@/hooks/useUpdate";
 
 // ✅ 1. Schema
 const roleSchema = z.object({
@@ -50,10 +51,10 @@ export function RoleForm({ defaultValues }: { defaultValues?: RoleFormValues & {
     resource: "الدور",
   })
 
-  const { mutate: updateRole, isPending: isUpdating } = usePost({
-    service: (values) => rolesServices.update(defaultValues!.id!, values),
-    key: "roles",
-    resource: "الدور",
+  const { mutate: updateRole, isPending: isUpdating } = useUpdate({
+    service: rolesServices.update,
+    key: "job-roles",
+    resourse:"الدور"
   })
 
   const { data } = useFetch({
@@ -75,9 +76,13 @@ export function RoleForm({ defaultValues }: { defaultValues?: RoleFormValues & {
 
   function onSubmit(values: RoleFormValues) {
     if (isEdit) {
-      updateRole(values)
+      updateRole({id:defaultValues.id ,body:values},{ 
+        onSuccess:()=>setOpenModal(false)
+      })
     } else {
-      addNewRole(values)
+      addNewRole(values,{ 
+        onSuccess:()=>setOpenModal(false)
+      })
     }
   }
 
