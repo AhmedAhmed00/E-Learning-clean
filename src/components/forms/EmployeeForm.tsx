@@ -37,10 +37,11 @@ import {
 import PhoneInput from "react-phone-input-2"
 import "react-phone-input-2/lib/style.css"
 import usePost from "@/hooks/usePost"
-import { employeesServices } from "@/data/api"
+import { employeesServices, rolesServices } from "@/data/api"
 import { FileUploadValidationDemo } from "./Files"
 import { prepareFormData } from "@/lib/helpers"
 import { useState } from "react"
+import { useFetch } from "@/hooks/useFetch"
 
 // ✅ 1. Schema
 const userSchema = z.object({
@@ -66,6 +67,15 @@ const groups = [
 
 export function EmployeeForm() {
     const [openModal, setOpenModal] = useState(false);
+    const {data:{results:groups}={}} = useFetch({ 
+      service:rolesServices.getAll,
+      key:"job-role",
+      params:{
+        paginated:"false"
+      }
+    })
+    
+    console.log(groups);
   
   
   const {mutate:addNewEmployee ,isPending} = usePost({ 
@@ -87,6 +97,10 @@ export function EmployeeForm() {
 
   function onSubmit(values: UserFormValues) {
     const formData = prepareFormData(values)
+    const groupSelected = groups.find(group => group.name === values.group_id).id
+    formData.delete("group_id")
+    formData.append("group_id" ,groupSelected )
+    console.log(groupSelected);
     addNewEmployee(formData)
   }
 
@@ -101,7 +115,7 @@ export function EmployeeForm() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[450px]">
+      <DialogContent className="sm:max-w-[650px]">
         <DialogHeader>
           <DialogTitle>إضافة موظف جديد</DialogTitle>
         </DialogHeader>
@@ -110,7 +124,9 @@ export function EmployeeForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 
             {/* Name */}
-            <FormField
+            
+            <div className="grid grid-cols-2 gap-5">
+                  <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
@@ -123,35 +139,7 @@ export function EmployeeForm() {
                 </FormItem>
               )}
             />
-
-            {/* Group */}
-            <FormField
-              control={form.control}
-              name="group_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>المجموعة</FormLabel>
-                  <FormControl>
-                    <Select   onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="اختر المجموعة" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {groups.map((g) => (
-                          <SelectItem key={g.id} value={g.id}>
-                            {g.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Email */}
-            <FormField
+                <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
@@ -164,6 +152,37 @@ export function EmployeeForm() {
                 </FormItem>
               )}
             />
+            </div>
+        
+
+            {/* Group */}
+            <FormField
+              control={form.control}
+              name="group_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>المجموعة</FormLabel>
+                  <FormControl>
+                    <Select   onValueChange={field.onChange}  defaultValue={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="اختر المجموعة" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {groups?.map((g) => (
+                          <SelectItem key={g?.id} value={g?.name}>
+                            {g?.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Email */}
+            <div className="grid grid-cols-2 gap-5">
 
             {/* Phone */}
             <FormField
@@ -201,7 +220,7 @@ export function EmployeeForm() {
                 </FormItem>
               )}
             />
-            
+            </div>
                  <FileUploadValidationDemo
                             title="صورة الموظف"
                             control={form.control}

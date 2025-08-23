@@ -15,7 +15,7 @@ interface CustomTableProps {
   columns: Array<Column>;
   actions: Array<"view" | "edit" | "delete">;
   loading: boolean;
-  endpoint:string;
+  endpoint?:string;
   modalName: ModalName;
 }
 

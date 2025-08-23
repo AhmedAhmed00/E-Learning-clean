@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Edit, Trash2, Loader2 } from 'lucide-react'
+import {  Trash2, Loader2 } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import BASEURL, { apiRequest } from '@/data/api'
@@ -10,6 +10,7 @@ import { RoleForm } from '@/components/forms/RoleForm'
 
 interface Role {
   id: number
+  name:string
   section: string
   description: string
   employeesCount: number
@@ -29,7 +30,7 @@ export function JobCard({ role }: JobCardProps) {
       return apiRequest('delete', `${BASEURL}/employee/groups-with-permissions/${id}/`)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['roles'] })
+      queryClient.invalidateQueries({ queryKey: ['job-roles'] })
       setIsDeleteDialogOpen(false)
     },
     onError: (error) => {

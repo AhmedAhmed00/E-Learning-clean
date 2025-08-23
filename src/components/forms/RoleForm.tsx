@@ -47,7 +47,7 @@ export function RoleForm({ defaultValues }: { defaultValues?: RoleFormValues & {
 
   const { mutate: addNewRole, isPending: isAdding } = usePost({
     service: rolesServices.create,
-    key: "roles",
+    key: "job-roles",
     resource: "الدور",
   })
 

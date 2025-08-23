@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/tabs"
 import { JobCard } from "./JobCard";
 import { useFetch } from "@/hooks/useFetch";
-import BASEURL, { apiRequest, employeesServices, rolesServices } from "@/data/api";
+import BASEURL, { apiRequest, employeesServices } from "@/data/api";
 
 const employeesCols = [
   { label: "الموظف", key: "user_name" },
@@ -47,7 +47,15 @@ const {data:{results}={}} = useFetch({
         </TabsList>
 
         <div>
-          <TableOperations resourse="الموظفون" />
+          <TableOperations filters={[
+            {
+              label:"الحالة",
+              type:"select",
+              name:"user__is_active",
+              defaultValue:"true",
+              options:[{label:"active" ,value:"true"},{label:"inactive", value:"false"}]
+            }
+          ]} resourse="الموظفون" />
         </div>
 
         <TabsContent value="employees">

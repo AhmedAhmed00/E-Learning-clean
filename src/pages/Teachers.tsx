@@ -37,7 +37,15 @@ export default function Teachers() {
 
       {/* عمليات علي الجدول */}
       <div>
-        <TableOperations resourse="مدرس" />
+        <TableOperations  filters={[
+            {
+              label:"الحالة",
+              type:"select",
+              name:"user__is_active",
+              defaultValue:"true",
+              options:[{label:"active" ,value:"true"},{label:"inactive", value:"false"}]
+            }
+          ]} resourse="مدرس" />
       </div>
 
       {/* 🎓 الكروسات مع الأنيميشن */}
