@@ -9,6 +9,7 @@ import Students from "./pages/Students";
 import Employees from "./pages/EmployeesAndRoles";
 import Login from "./pages/Login";
 import TeacherDetails from "./features/teachers/TeacherDetails";
+import CourseDetails from "./features/courses/CourseDetails";
 
 
 // Lazy imports
@@ -23,6 +24,7 @@ const protectedRoutes = [
       { index: true, element: <Navigate replace to="dashboard" /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "courses", element: <Courses /> },
+      { path: "courses/:id", element: <CourseDetails /> },
       { path: "teachers", element: <Teachers /> },
       { path: "teachers/:teacherId", element: <TeacherDetails /> },
       { path: "orders", element: <Orders /> },

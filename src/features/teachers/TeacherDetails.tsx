@@ -137,11 +137,10 @@ export default function TeacherDetails() {
   </TabsList>
  
 
-<TabsContent value="overview" >
+<TabsContent value="overview">
   <div className="grid grid-cols-2 w-full md:grid-cols-2 gap-8">
-    {/* السيرة الذاتية */}
-
-     <InfoCard title="معلومات شخصية" icon={User}>
+    {/* المعلومات الشخصية */}
+    <InfoCard title="معلومات شخصية" icon={User}>
       <div className="space-y-5">
         <div className="flex justify-between">
           <span className="text-gray-500">تاريخ الميلاد:</span>
@@ -157,81 +156,46 @@ export default function TeacherDetails() {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">الخبرة:</span>
-          <span> {data?.experience}  </span>
+          <span>{data?.experience}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">آخر نشاط:</span>
-          <span>مش مبعوته</span>
+          <span>{data?.user_created_at}</span>
         </div>
       </div>
     </InfoCard>
-    {/* المعلومات الشخصية */}
-    
-    
+
+    {/* السيرة الذاتية + الشهادات */}
     <div className="space-y-4">
-    <InfoCard title="السيرة الذاتية" icon={ScrollText}>
-      <p>
-        مطور برمجيات مع أكثر من 10 سنوات خبرة في تطوير التطبيقات والمواقع
-        الإلكترونية. متخصص في تقنيات الويب الحديثة وقواعد البيانات.
-      </p>
-    </InfoCard>
-       
+      {/* السيرة الذاتية */}
+      <InfoCard title="السيرة الذاتية" icon={ScrollText}>
+        <p>{data?.bio ?? "لا توجد سيرة ذاتية متاحة"}</p>
+      </InfoCard>
 
-    {/* الشهادات */}
-    <InfoCard title="الشهادات والمؤهلات" icon={BadgeCheck}>
-      <ul className="space-y-2">
-        <li className="flex items-center gap-2">
-          <BadgeCheck className="text-yellow-500 w-4 h-4" />
-          AWS Certified Developer
-        </li>
-        <li className="flex items-center gap-2">
-          <BadgeCheck className="text-yellow-500 w-4 h-4" />
-          Google Cloud Professional
-        </li>
-        <li className="flex items-center gap-2">
-          <BadgeCheck className="text-yellow-500 w-4 h-4" />
-          Microsoft Azure Fundamentals
-        </li>
-      </ul>
-    </InfoCard>
-        
+      {/* الشهادات */}
+      <InfoCard title="الشهادات والمؤهلات" icon={BadgeCheck}>
+        {data?.certificates?.length ? (
+          <ul className="space-y-2">
+            {data.certificates.map((cert) => (
+              <li key={cert.id} className="flex items-center gap-2">
+                <BadgeCheck className="text-yellow-500 w-4 h-4" />
+                <span>{cert.title}</span>
+                <img
+                  src={cert.image}
+                  alt={cert.title}
+                  className="w-10 h-10 rounded-md border"
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500">لا توجد شهادات</p>
+        )}
+      </InfoCard>
     </div>
+  </div>
+</TabsContent>
 
-    
-    
-    
-  </div>
-</TabsContent>
-<TabsContent value="courses">
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    {[
-      {
-        id: "1",
-        title: "أساسيات البرمجة بـ Python",
-        price: 99,
-        isActive: true,
-        profit: 8500,
-        students: 245,
-        reviews: 89,
-        rating: 4.8,
-        createdAt: "2023/8/28",
-      },
-      {
-        id: "2",
-        title: "تطوير تطبيقات الويب",
-        price: 149,
-        isActive: true,
-        profit: 7250,
-        students: 189,
-        reviews: 67,
-        rating: 4.9,
-        createdAt: "2023/5/15",
-      },
-    ].map((course) => (
-      <CourseCard key={course.id} course={course} />
-    ))}
-  </div>
-</TabsContent>
 </Tabs>
     </div>
   )

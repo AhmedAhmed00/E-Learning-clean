@@ -18,8 +18,7 @@ import { coursesServices } from "@/data/api";
 // 📊 بيانات الكروت الصغيرة (Dashboard)
 
 
-// 🎓 بيانات الكورسات
-
+// 
 
 
 export default function Courses() {
@@ -107,7 +106,7 @@ export default function Courses() {
 
       {/* 📊 الكروت الصغيرة مع الأنيميشن */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        {dashboardCards.map((card, i) => (
+        {dashboardCards?.map((card, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 40, scale: 0.9 }}
@@ -134,7 +133,7 @@ export default function Courses() {
 
       {/* 🎓 الكورسات مع الأنيميشن */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        {cardItems.map((item, i) => (
+        {results?.map((item, i) => (
           <motion.div
             key={item.id}
             initial={{ opacity: 0, y: 40, scale: 0.9 }}

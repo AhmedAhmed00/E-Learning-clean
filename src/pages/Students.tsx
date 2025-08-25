@@ -5,9 +5,7 @@ import {
   UserRound,
   GraduationCap,
   BookOpen,
-  ClipboardCheck,
 } from "lucide-react";
-
 import Heading from "@/components/shared/Heading";
 import TableOperations from "@/components/shared/table/TableOperations";
 import RoundedCard from "@/components/shared/rounded-card";
@@ -77,20 +75,13 @@ export default function Students() {
   },
   {
     id: 3,
-    title: "طلاب غير نشطين",
+    title: "متوسط الطلاب لكل كورس",
        number: "-----", 
     icon: BookOpen,
     iconBg: "bg-yellow-500",
     desc: "طلاب توقفوا عن الكورسات",
   },
-  {
-    id: 4,
-    title: "إجمالي الشهادات",
-    number: "------",
-    icon: ClipboardCheck,
-    iconBg: "bg-purple-500",
-    desc: "شهادات تم منحها",
-  },
+
 ];
 
 
@@ -109,7 +100,7 @@ export default function Students() {
       </div>
 
       {/* 📊 كروت إحصائيات الطلاب */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {studentStats.map((card, i) => (
           <motion.div
             key={card.id}

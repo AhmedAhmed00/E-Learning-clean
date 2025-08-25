@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
@@ -26,7 +26,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, PlusIcon } from "lucide-react";
+import { Loader2, PlusIcon, Trash2, Plus } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import usePost from "@/hooks/usePost";
@@ -34,7 +34,7 @@ import { tachersServices } from "@/data/api";
 import { FileUploadValidationDemo } from "./Files";
 import { useState } from "react";
 
-// ✅ Teacher Schema including images
+// ✅ Teacher Schema including new fields
 const teacherSchema = z.object({
   name: z.string().min(3, "يجب أن يحتوي الاسم على 3 أحرف على الأقل"),
   email: z.string().email("بريد إلكتروني غير صالح"),
@@ -45,8 +45,18 @@ const teacherSchema = z.object({
   specialization: z.string().min(2, "يجب إدخال التخصص"),
   password: z.string().min(6, "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل"),
   bio: z.string().min(3, "أدخل نبذة قصيرة"),
-  image: z.instanceof(File,{error:"صورة المدرس مطلوبة"}),
-  id_image: z.instanceof(File,{error:"صورة هوية المدرس مطلوبة"}),
+  education: z.string().min(3, "يجب إدخال المؤهل التعليمي"),
+  experience: z.string().min(3, "يجب إدخال الخبرة"),
+  birth_date: z.string().min(1, "تاريخ الميلاد مطلوب").regex(/^\d{4}-\d{2}-\d{2}$/, "تاريخ الميلاد يجب أن يكون بصيغة YYYY-MM-DD"),
+  address: z.string().min(3, "يجب إدخال العنوان"),
+  image: z.instanceof(File, { error: "صورة المدرس مطلوبة" }),
+  id_image: z.instanceof(File, { error: "صورة هوية المدرس مطلوبة" }),
+  certificates: z.array(
+    z.object({
+      title: z.string().min(2, "عنوان الشهادة مطلوب"),
+      image: z.instanceof(File, { error: "صورة الشهادة مطلوبة" }),
+    })
+  ).min(1, "يجب إضافة شهادة واحدة على الأقل"),
 });
 
 type TeacherFormValues = z.infer<typeof teacherSchema>;
@@ -61,9 +71,19 @@ export function TeacherForm() {
       specialization: "",
       password: "",
       bio: "",
+      education: "",
+      experience: "",
+      birth_date: "",
+      address: "",
       image: undefined,
       id_image: undefined,
+      certificates: [{ title: "", image: undefined }],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "certificates",
   });
 
   const [openModal, setOpenModal] = useState(false);
@@ -84,9 +104,19 @@ export function TeacherForm() {
     formData.append("specialization", values.specialization);
     formData.append("password", values.password);
     formData.append("bio", values.bio);
+    formData.append("education", values.education);
+    formData.append("experience", values.experience);
+    formData.append("birth_date", values.birth_date);
+    formData.append("address", values.address);
 
     if (values.image) formData.append("image", values.image);
     if (values.id_image) formData.append("id_image", values.id_image);
+
+    // Add certificates
+    values.certificates.forEach((cert, index) => {
+      formData.append(`certificates[${index}][title]`, cert.title);
+      if (cert.image) formData.append(`certificates[${index}][image]`, cert.image);
+    });
 
     // send FormData to your usePost hook
     addTeacher(formData, {
@@ -106,15 +136,14 @@ export function TeacherForm() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[655px]">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>إضافة مدرس جديد</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
-
+            {/* Name & Email */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -130,7 +159,6 @@ export function TeacherForm() {
                 )}
               />
 
-              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
@@ -146,8 +174,8 @@ export function TeacherForm() {
               />
             </div>
 
+            {/* Phone & Specialization */}
             <div className="grid grid-cols-2 gap-4">
-              {/* Phone */}
               <FormField
                 control={form.control}
                 name="phone"
@@ -175,7 +203,6 @@ export function TeacherForm() {
                 )}
               />
 
-              {/* Specialization */}
               <FormField
                 control={form.control}
                 name="specialization"
@@ -193,6 +220,42 @@ export function TeacherForm() {
                 )}
               />
             </div>
+
+            {/* Birth Date & Address */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="birth_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>تاريخ الميلاد</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="date"
+                        placeholder="1995-08-13"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>العنوان</FormLabel>
+                    <FormControl>
+                      <Input placeholder="أدخل العنوان" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             {/* Password */}
             <FormField
               control={form.control}
@@ -227,9 +290,38 @@ export function TeacherForm() {
               )}
             />
 
-            {/* Image */}
+            {/* Education & Experience */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="education"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>المؤهل التعليمي</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="أدخل المؤهل التعليمي" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* ID Image */}
+              <FormField
+                control={form.control}
+                name="experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>الخبرة</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="أدخل الخبرة العملية" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Profile Image & ID Image */}
             <div className="grid grid-cols-2 gap-6">
               <FileUploadValidationDemo
                 title="صورة المدرس"
@@ -241,6 +333,68 @@ export function TeacherForm() {
                 control={form.control}
                 name="id_image"
               />
+            </div>
+
+            {/* Certificates Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <FormLabel className="text-lg font-medium">الشهادات</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append({ title: "", image: undefined })}
+                >
+                  <Plus className="h-4 w-4 ml-2" />
+                  إضافة شهادة
+                </Button>
+              </div>
+              
+              {fields.map((field, index) => (
+                <div key={field.id} className="border rounded-lg p-4 space-y-4 bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">الشهادة {index + 1}</h4>
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`certificates.${index}.title`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>عنوان الشهادة</FormLabel>
+                          <FormControl>
+                            <Input placeholder="أدخل عنوان الشهادة" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FileUploadValidationDemo
+                      title="صورة الشهادة"
+                      control={form.control}
+                      name={`certificates.${index}.image`}
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              {form.formState.errors.certificates?.root && (
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.certificates.root.message}
+                </p>
+              )}
             </div>
 
             <DialogFooter>

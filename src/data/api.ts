@@ -6,6 +6,7 @@ import axios, {
 } from "axios";
 
 const BASEURL = "https://learning.sass.cyparta.com";
+// const BASEURL = "http://192.168.1.122:9000";
 
 // ✅ Create axios instance
 export const api: AxiosInstance = axios.create({ baseURL: BASEURL });
@@ -167,6 +168,7 @@ export const STUDENTS = `/students/manage/`;
 export const TEACHERS = `/instructor/manage/`;
 export const ORDERS = `/course/student-orders-employee/`;
 export const ROLES = `/employee/groups-with-permissions/`;
+export const OVERVIEW = `/dashboard/overview/`;
 
 export const coursesServices = createService(COURSES);
 export const employeesServices = createService(EMPLOYEES);
@@ -174,5 +176,6 @@ export const studentsServices = createService(STUDENTS);
 export const tachersServices = createService(TEACHERS);
 export const ordersServices = createService(ORDERS);
 export const rolesServices = createService(ROLES);
+export const overviewServices = createService(OVERVIEW);
 
 export default BASEURL;

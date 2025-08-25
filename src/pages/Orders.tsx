@@ -16,91 +16,102 @@ import CustomTable from "@/components/shared/table/CustomTable";
 import { useFetch } from "@/hooks/useFetch";
 import { ordersServices } from "@/data/api";
 
+function getStatusColor(status?: string) {
+  switch (status) {
+    case "accepted":
+      return "bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium";
+    case "pending":
+      return "bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-medium";
+    case "declined":
+      return "bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-medium";
+    default:
+      return "bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium";
+  }
+}
+
 const ordersTableColumns = [
   {
     label: "رقم الطلب",
     key: "id",
+    render: (value: string) => <div>#{value}</div>,
   },
   {
     label: "الطالب",
-    key: "student",
+    key: "student_name",
   },
   {
     label: "الكورس",
-    key: "course_name",
+    key: "course_title",
   },
   {
     label: "المبلغ",
-    key: "amount",
+    key: "cousre_final_price",
   },
   {
     label: "التاريخ",
-    key: "date",
+    key: "order_date",
+    render: (value: string) => {
+      const date = new Date(value);
+      return date.toLocaleDateString("ar-EG", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+    },
   },
   {
     label: "الحالة",
     key: "status",
+    render: (value: string) => {
+      return <div className={getStatusColor(value)}>{value}</div>;
+    },
   },
 ];
-
 
 // 📊 بيانات الطلبات
 
 export default function Orders() {
-  
-  const { data,isError,isFetching,isLoading} = useFetch({ 
-    service:ordersServices.getAll, 
-    key:"orders"
-  })
-  
-  
-  
-  
+  const { data, isError, isFetching, isLoading } = useFetch({
+    service: ordersServices.getAll,
+    key: "orders",
+  });
+
   const orderStats = [
-  {
-    id: 1,
-    title: "بانتظار المراجعة",
-    number: data?.stats?.total_pending,
-    icon: ClipboardList,
-    iconBg: "bg-yellow-500",
-    desc: "طلبات تحتاج مراجعة",
-  },
-  {
-    id: 2,
-    title: "موافق عليها",
-    number: data?.stats?.total_accepted,
-    icon: CheckCircle2,
-    iconBg: "bg-green-500",
-    desc: "طلبات تمت الموافقة عليها",
-  },
-  {
-    id: 3,
-    title: "مرفوضة",
-        number: data?.stats?.total_declined,
+    {
+      id: 1,
+      title: "بانتظار المراجعة",
+      number: data?.stats?.total_pending,
+      icon: ClipboardList,
+      iconBg: "bg-yellow-500",
+      desc: "طلبات تحتاج مراجعة",
+    },
+    {
+      id: 2,
+      title: "موافق عليها",
+      number: data?.stats?.total_accepted,
+      icon: CheckCircle2,
+      iconBg: "bg-green-500",
+      desc: "طلبات تمت الموافقة عليها",
+    },
+    {
+      id: 3,
+      title: "مرفوضة",
+      number: data?.stats?.total_declined,
 
-    icon: XCircle,
-    iconBg: "bg-red-500",
-    desc: "طلبات تم رفضها",
-  },
-  {
-    id: 4,
-    title: "إجمالي الإيرادات",
-        number: data?.stats?.total_profit,
-    icon: DollarSign,
-    iconBg: "bg-blue-500",
-    desc: "القيمة الكلية من المبيعات",
-  },
-];
+      icon: XCircle,
+      iconBg: "bg-red-500",
+      desc: "طلبات تم رفضها",
+    },
+    {
+      id: 4,
+      title: "إجمالي الإيرادات",
+      number: data?.stats?.total_profit,
+      icon: DollarSign,
+      iconBg: "bg-blue-500",
+      desc: "القيمة الكلية من المبيعات",
+    },
+  ];
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
   return (
     <>
       {/* 🏷️ الهيدر */}
@@ -111,8 +122,6 @@ export default function Orders() {
           desc="مراجعة وإدارة طلبات الطلاب للكورسات"
           icon={UserRound}
         />
-
-
       </div>
 
       {/* 📊 الكروت الخاصة بالطلبات */}
@@ -140,7 +149,23 @@ export default function Orders() {
 
       {/* 🔎 عمليات علي الجدول */}
       <div>
-        <TableOperations resourse="طلب" />
+        <TableOperations
+          filters={[
+            {
+              label: "الحالة",
+              name: "status",
+              defaultValue: "",
+              type:"select",
+              options: [
+                { label: "الكل", value: null },
+                { label: "معلق", value: "pending" },
+                { label: "مقبول", value: "accepted" },
+                { label: "ملغي", value: "declined" },
+              ],
+            },
+          ]}
+          resourse="طلب"
+        />
       </div>
 
       <CustomTable
