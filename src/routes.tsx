@@ -28,6 +28,7 @@ const protectedRoutes = [
       { path: "teachers", element: <Teachers /> },
       { path: "teachers/:teacherId", element: <TeacherDetails /> },
       { path: "orders", element: <Orders /> },
+      { path: "orders/view/:id", element: <Orders viewModal={true} /> },
       { path: "students", element: <Students /> },
       { path: "employees", element: <Employees /> },
     

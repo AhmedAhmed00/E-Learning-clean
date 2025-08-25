@@ -53,7 +53,7 @@ export function LectureForm({ id: course_id }: { id: number }) {
   // ✅ Custom hook for mutation
   const { mutate: addLecture, isPending } = usePost({
     service: (body) =>
-      apiRequest("post", `${BASEURL}/course/simple-lectures`, body),
+      apiRequest("post", `${BASEURL}/course/simple-lectures/`, body),
     key: "lectures",
     resource: "المحاضرة",
   });

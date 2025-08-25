@@ -15,6 +15,8 @@ import RoundedCard from "@/components/shared/rounded-card";
 import CustomTable from "@/components/shared/table/CustomTable";
 import { useFetch } from "@/hooks/useFetch";
 import { ordersServices } from "@/data/api";
+import useFetchById from "@/hooks/useFetchById";
+import { useNavigate, useParams } from "react-router";
 
 function getStatusColor(status?: string) {
   switch (status) {
@@ -67,14 +69,41 @@ const ordersTableColumns = [
     },
   },
 ];
+interface CourseOrder {
+  id: number;
+  student: number;
+  student_name: string;
+  course: number;
+  course_title: string;
+  receipt: string;
+  status: 'pending' | 'approved' | 'rejected'; 
+  order_date: string; 
+  cousre_final_price: string; 
+}
 
-// 📊 بيانات الطلبات
 
-export default function Orders() {
+
+export default function Orders({viewModal}:{viewModal?:boolean}) {
+
+
+  const navigate = useNavigate()
+
   const { data, isError, isFetching, isLoading } = useFetch({
     service: ordersServices.getAll,
     key: "orders",
   });
+  
+  const {id} = useParams()
+
+  
+  const {data:orderDetails } = useFetchById<CourseOrder>("order" , id , ordersServices.getById)
+  const showModal = Boolean(id && orderDetails);
+
+  console.log(orderDetails)
+ const closeModal = () => {
+    navigate("/orders"); // Adjust based on your route structure
+  };
+
 
   const orderStats = [
     {
@@ -175,6 +204,61 @@ export default function Orders() {
         columns={ordersTableColumns}
         data={data?.data?.results || []}
       />
+       {showModal && orderDetails && (
+        <OrderDetailsModal
+          open={showModal}
+          onClose={closeModal}
+          data={orderDetails}
+        />
+      )}
     </>
+  );
+}
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+interface OrderDetailsModalProps {
+  open: boolean;
+  onClose: () => void;
+  data: CourseOrder;
+}
+
+export  function OrderDetailsModal({
+  open,
+  onClose,
+  data,
+}: OrderDetailsModalProps) {
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>تفاصيل الطلب</DialogTitle>
+          <DialogDescription>
+            معلومات الطلب رقم #{data.id}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-2  text-sm">
+          <p><strong className="me-1">الطالب:</strong> {data.student_name}</p>
+          <p><strong className="me-1">الكورس:</strong> {data.course_title}</p>
+          <p><strong className="me-1">المبلغ:</strong> {data.cousre_final_price}</p>
+          <p><strong className="me-1">الحالة:</strong> {data.status}</p>
+          <p><strong className="me-1">التاريخ:</strong> {new Date(data.order_date).toLocaleString("ar-EG")}</p>
+          
+        </div>
+
+        <DialogClose asChild>
+          <Button onClick={onClose} variant="outline" className="mt-4">إغلاق</Button>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
   );
 }
