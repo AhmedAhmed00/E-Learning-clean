@@ -26,48 +26,49 @@ import {
 } from "@/components/ui/form";
 
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Loader2, PlusIcon } from "lucide-react";
 import BASEURL, { apiRequest } from "@/data/api";
 import usePost from "@/hooks/usePost";
 
-// ✅ Your schema
-const lectureSchema = z.object({
-  title: z.string().min(3, "عنوان المحاضرة مطلوب"),
-  description: z.string().min(5, "الوصف مطلوب"),
+// ✅ Updated schema for file upload
+const pdfUploadSchema = z.object({
+  title: z.string().min(3, "عنوان الملف مطلوب"),
+  file: z
+    .any()
+    .refine((file) => file instanceof File, "الملف مطلوب")
+    .refine((file) => file?.type === "application/pdf", "الملف يجب أن يكون PDF"),
 });
 
-type LectureFormValues = z.infer<typeof lectureSchema>;
+type PdfFormValues = z.infer<typeof pdfUploadSchema>;
 
-export function LectureForm({ id: course_id }: { id: number }) {
+export function PdfToLecForm({ lecture_id }: { lecture_id: number }) {
   const [openModal, setOpenModal] = useState(false);
 
-  const form = useForm<LectureFormValues>({
-    resolver: zodResolver(lectureSchema),
+  const form = useForm<PdfFormValues>({
+    resolver: zodResolver(pdfUploadSchema),
     defaultValues: {
       title: "",
-      description: "",
+      file: undefined,
     },
   });
 
-  // ✅ Custom hook for mutation
-  const { mutate: addLecture, isPending } = usePost({
+  const { mutate: uploadPdf, isPending } = usePost({
     service: (body) =>
-      apiRequest("post", `${BASEURL}/course/simple-lectures`, body),
-    key: "lectures",
-    resource: "المحاضرة",
+      apiRequest("post", `${BASEURL}/course/simple-files/`, body, {
+        headers: { "Content-Type": "multipart/form-data" },
+        isFormData: true,
+      }),
+    key: "lecture-pdfs",
+    resource: "الملف",
   });
 
-  // ✅ Submit handler with course_id
-  function onSubmit(values: LectureFormValues) {
-    const payload = {
-      ...values,
-      course_id, // ✅ passed from props
-    };
+  function onSubmit(values: PdfFormValues) {
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("lecture_id", String(lecture_id));
+    formData.append("file", values.file);
 
-    console.log("Submitting payload:", payload);
-
-    addLecture(payload, {
+    uploadPdf(formData, {
       onSuccess: () => {
         setOpenModal(false);
         form.reset();
@@ -80,13 +81,13 @@ export function LectureForm({ id: course_id }: { id: number }) {
       <DialogTrigger asChild>
         <Button className="text-[16px] px-1">
           <PlusIcon />
-          إضافة فصل
+          إضافة ملف
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>إضافة فصل </DialogTitle>
+          <DialogTitle>إضافة ملف PDF للمحاضرة</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -96,9 +97,9 @@ export function LectureForm({ id: course_id }: { id: number }) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>عنوان المحاضرة</FormLabel>
+                  <FormLabel>عنوان الملف</FormLabel>
                   <FormControl>
-                    <Input placeholder="أدخل عنوان المحاضرة" {...field} />
+                    <Input placeholder="أدخل عنوان الملف" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,12 +108,16 @@ export function LectureForm({ id: course_id }: { id: number }) {
 
             <FormField
               control={form.control}
-              name="description"
+              name="file"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>الوصف</FormLabel>
+                  <FormLabel>الملف (PDF فقط)</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="أدخل وصف المحاضرة" {...field} />
+                    <Input
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => field.onChange(e.target.files?.[0])}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,10 +134,10 @@ export function LectureForm({ id: course_id }: { id: number }) {
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    جاري إضافة المحاضرة
+                    جاري رفع الملف
                   </>
                 ) : (
-                  "إضافة محاضرة"
+                  "إضافة ملف"
                 )}
               </Button>
             </DialogFooter>

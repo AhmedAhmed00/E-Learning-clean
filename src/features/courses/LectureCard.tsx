@@ -2,6 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { CheckCircle, DollarSign } from "lucide-react";
 import { VideoForm } from "./VidToLecForm";
+import { PdfToLecForm } from "./PdfToLecForm";
+import { QuizToLecForm } from "./QuizToLec";
 
 interface LectureCardProps {
   number: string;
@@ -17,6 +19,7 @@ interface LectureCardProps {
 }
 
 export function LectureCard({
+  id,
   number,
   title,
   description,
@@ -53,7 +56,13 @@ export function LectureCard({
           {number}
         </div>
       </div>
-      <VideoForm />
+      <div className="flex gap-4">
+
+<VideoForm />
+      <PdfToLecForm lecture_id={id} />
+      <QuizToLecForm  lecture_id={id}/>
+      </div>
+      
 
       {/* Title & Description */}
       <h3 className="font-semibold text-xl">{title}</h3>

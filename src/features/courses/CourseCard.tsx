@@ -9,6 +9,7 @@ import {
   Pencil,
   Eye,
 } from "lucide-react"
+import { Link } from "react-router"
 
 export interface CardItem {
   id: number
@@ -123,10 +124,12 @@ average_stars,category,created_at,description,discount_percentage,final_price,id
             <Pencil className="w-4 h-4" />
           </Button>
         </div>
+        <Link to={`${id}`}> 
         <Button variant="secondary" className="flex items-center gap-2">
           <Eye className="w-4 h-4" />
           عرض التفاصيل
         </Button>
+        </Link>
       </CardFooter>
     </Card>
   )

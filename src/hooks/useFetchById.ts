@@ -3,6 +3,8 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 type ServiceFn<TData> = (id: string | number) => Promise<TData>;
 
 export default function useFetchById<TData>(
+
+  
   key: string,
   id: string | number | undefined,
   service: ServiceFn<TData>,
