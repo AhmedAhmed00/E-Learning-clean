@@ -23,7 +23,10 @@ import {
 
   // Secondary
   LifeBuoy, // Get Help
-  Search, // Search
+  Search,
+  Tv,
+  Tv2,
+  VideoIcon, // Search
 } from "lucide-react";
 
 const data = {
@@ -57,6 +60,16 @@ const data = {
       title: "الطلاب",
       url: "/students",
       icon: GraduationCap,
+    },
+    {
+      title: "طلبات المحاضرات",
+      url: "/lecture-orders",
+      icon: VideoIcon,
+    },
+    {
+      title: "الإعلانات",
+      url: "/ads",
+      icon: Tv2,
     },
     {
       title: "الموظفين",

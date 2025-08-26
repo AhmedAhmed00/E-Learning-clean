@@ -25,7 +25,7 @@ const CustomTable = ({
   columns,
   loading,
   actions,
-  modalName,endpoint,
+  modalName,endpoint,defValuesOfEdit
 }: CustomTableProps) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
@@ -119,7 +119,7 @@ const CustomTable = ({
                     <td className="px-6 py-2 whitespace-nowrap text-sm text-gray">
                       <div className="flex items-center justify-center gap-2">
                         {actions.includes("edit") && (
-                          <Link to={`/${modalName}/${item.id}`}>
+                          <Link state={{item}} to={`/${modalName}/${item.id}`}>
                             <Pencil size={16} />
                           </Link>
                         )}
@@ -127,7 +127,7 @@ const CustomTable = ({
                           <DeleteRowModal id={item.id} modelName={modalName} endpoint={endpoint} />
                         )}
                         {actions.includes("view") && (
-                          <Link to={`/${modalName}/view/${item.id}`}>
+                          <Link   to={`/${modalName}/view/${item.id}`}>
                             <Eye size={16} />
                           </Link>
                         )}

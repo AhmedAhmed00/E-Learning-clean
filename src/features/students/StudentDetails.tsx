@@ -15,6 +15,7 @@ import {
   CreditCard,
   User,
 } from "lucide-react";
+import StudentCoursesList from "./StudentCoursesList";
 
 const info = [
   { label: "تاريخ الميلاد", value: "15 مارس 2001" },
@@ -71,14 +72,14 @@ export default function StudentDetails() {
           <TabsTrigger value="overview" className="px-4 py-2">
             نظرة عامة
           </TabsTrigger>
-          <TabsTrigger value="students" className="px-4 py-2">
+          <TabsTrigger value="courses" className="px-4 py-2">
             الكورسات المسجلة
           </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="mt-6 space-y-6">
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-2 gap-2">
             <Card className="p-6 shadow-md rounded-2xl">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-gray-700">
@@ -101,16 +102,74 @@ export default function StudentDetails() {
                 ))}
               </div>
             </Card>
+
+
+       <RecentActivity />
           </div>
+          
         </TabsContent>
 
         {/* Registered Courses Tab */}
-        <TabsContent value="students" className="mt-6">
+        <TabsContent value="courses" className="mt-6">
           <Card className="p-6 rounded-2xl shadow-md text-center">
-            <p className="text-gray-600">قائمة الطلاب ستظهر هنا</p>
+            <StudentCoursesList />
           </Card>
         </TabsContent>
+
+
+
+        
       </Tabs>
     </div>
+  );
+}
+
+
+
+
+const recentActivities = [
+  {
+    title: 'أكمل درس "المتغيرات في Python"',
+    icon: CheckCircle2,
+    color: "text-green-600",
+    time: "منذ يومين",
+  },
+  {
+    title: 'أجرى اختبار "اختبار الفصل الأول"',
+    icon: BarChart2,
+    color: "text-blue-600",
+    time: "منذ 3 أيام",
+  },
+  {
+    title: 'انضم للكورس "التسويق الرقمي"',
+    icon: BookOpen,
+    color: "text-purple-600",
+    time: "منذ أسبوع",
+  },
+];
+
+function RecentActivity() {
+  return (
+    <Card className="p-6 shadow-md rounded-2xl">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-semibold text-gray-700">النشاط الأخير</h2>
+        <span className="text-primary">🕒</span>
+      </div>
+
+      <div className="space-y-4">
+        {recentActivities.map((activity, idx) => (
+          <div
+            key={idx}
+            className="flex items-start gap-3 text-sm text-gray-700 border-b pb-3 last:border-b-0 last:pb-0"
+          >
+            <activity.icon className={`w-5 h-5 ${activity.color}`} />
+            <div className="flex flex-col">
+              <span>{activity.title}</span>
+              <span className="text-xs text-gray-400">{activity.time}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
   );
 }

@@ -128,7 +128,31 @@ export default function Courses() {
       </div>
       {/* عمليات علي الجدول */}
       <div> 
-        <TableOperations resourse="كورس" />
+        <TableOperations 
+  resourse="كورس"
+  filters={[
+    {
+      label: "المستوي",
+      name: "level",
+      type:"select",
+      options: [
+        { label: "مبتدئ", value: "beginner" },
+        { label: "متوسط", value: "intermediate" },
+        { label: "متقدم", value: "advanced" }
+      ]
+    },
+    {
+      label: "الحالة",
+      name: "status",
+            type:"select",
+      options: [
+        { label: "نشط", value: "active" },
+        { label: "غير نشط", value: "inactive" }
+      ]
+    }
+  ]}
+/>
+
       </div>
 
       {/* 🎓 الكورسات مع الأنيميشن */}

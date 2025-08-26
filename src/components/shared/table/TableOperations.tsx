@@ -143,3 +143,119 @@ export default function TableOperations({
     </motion.div>
   )
 }
+
+
+
+
+interface FilterOption {
+  value: string
+  label: string
+}
+
+interface FilterConfig {
+  name: string
+  label: string
+  type?: "select" | "date"
+  options?: FilterOption[]
+  defaultValue?: string
+}
+
+export  function CustomFilter({
+  resourse = "عنصر",
+  filters = [],
+}: {
+  resourse: string
+  filters?: FilterConfig[]
+}) {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [filterValues, setFilterValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {}
+    filters.forEach((f) => {
+      initial[f.name] =
+        searchParams.get(f.name) ||
+        f.defaultValue ||
+        (f.type === "select" ? f.options?.[0]?.value : "") ||
+        ""
+    })
+    return initial
+  })
+
+  const handleFilterChange = (name: string, value: string) => {
+    setFilterValues((prev) => ({ ...prev, [name]: value }))
+  }
+
+  useEffect(() => {
+    const params: Record<string, string> = {}
+    Object.entries(filterValues).forEach(([key, value]) => {
+      if (value && value !== "all") params[key] = value
+    })
+    setSearchParams(params, { replace: true })
+  }, [filterValues, setSearchParams])
+
+  const DateButton = forwardRef<
+    HTMLButtonElement,
+    { value?: string; onClick?: () => void; placeholder?: string }
+  >(({ value, onClick, placeholder }, ref) => (
+    <Button
+      ref={ref}
+      onClick={onClick}
+      variant="outline"
+      className="w-full justify-start text-left font-normal h-[38px]"
+    >
+      <CalendarIcon className="mr-2 h-4 w-4" />
+      {value && value !== "" ? value : placeholder}
+    </Button>
+  ))
+  DateButton.displayName = "DateButton"
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 120 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="flex  p-4 rounded-2xl  gap-4 mb-6 flex-wrap"
+    >
+      {filters.map((f) => (
+        <div key={f.name} className="w-48">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
+              {f.label}
+            </label>
+
+            {f.type === "select" ? (
+              <Select
+                value={filterValues[f.name]}
+                onValueChange={(val) => handleFilterChange(f.name, val)}
+              >
+                <SelectTrigger className="bg-white w-full h-[38px]">
+                  <SelectValue placeholder="اختر..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {f.options?.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : f.type === "date" ? (
+              <DatePicker
+                selected={filterValues[f.name] ? new Date(filterValues[f.name]) : null}
+                onChange={(date: Date | null) =>
+                  handleFilterChange(
+                    f.name,
+                    date ? date.toISOString().split("T")[0] : ""
+                  )
+                }
+                dateFormat="yyyy-MM-dd"
+                customInput={<DateButton placeholder="اختر التاريخ" />}
+                wrapperClassName="w-full"
+              />
+            ) : null}
+          </div>
+        </div>
+      ))}
+    </motion.div>
+  )
+}

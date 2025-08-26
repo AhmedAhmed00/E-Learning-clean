@@ -1014,18 +1014,21 @@ function formatBytes(bytes: number) {
 
 function getFileIcon(file: File) {
   const type = file.type;
-  const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+  const extension = file.name?.split(".").pop()?.toLowerCase() ?? "";
 
-  if (type.startsWith("video/")) {
+  if (type3
+    .startsWith("video/")) {
     return <FileVideoIcon />;
   }
 
-  if (type.startsWith("audio/")) {
+  if (type3
+  .startsWith("audio/")) {
     return <FileAudioIcon />;
   }
 
   if (
-    type.startsWith("text/") ||
+    type3
+    .startsWith("text/") ||
     ["txt", "md", "rtf", "pdf"].includes(extension)
   ) {
     return <FileTextIcon />;
@@ -1083,7 +1086,7 @@ function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
     (file: File) => {
       if (render) return render(file);
 
-      if (itemContext.fileState?.file.type.startsWith("image/")) {
+      if (itemContext.fileState?.file.type?.startsWith("image/")) {
         let url = context.urlCache.get(file);
         if (!url) {
           url = URL.createObjectURL(file);

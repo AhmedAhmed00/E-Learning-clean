@@ -11,6 +11,9 @@ import Login from "./pages/Login";
 import TeacherDetails from "./features/teachers/TeacherDetails";
 import CourseDetails from "./features/courses/CourseDetails";
 import StudentDetails from "./features/students/StudentDetails";
+import Ads from "./pages/Ads";
+import LectureOrders from "./pages/LectureOrders";
+import { EditAd } from "./components/forms/EditAd";
 
 
 // Lazy imports
@@ -29,6 +32,9 @@ const protectedRoutes = [
       { path: "teachers", element: <Teachers /> },
       { path: "teachers/:teacherId", element: <TeacherDetails /> },
       { path: "orders", element: <Orders /> },
+      { path: "lecture-orders", element: <LectureOrders /> },
+      { path: "ads", element: <Ads /> },
+      { path: "ads/:id", element: <EditAd /> },
       { path: "orders/view/:id", element: <Orders viewModal={true} /> },
       { path: "students", element: <Students /> },
       { path: "students/view/:id", element: <StudentDetails /> },

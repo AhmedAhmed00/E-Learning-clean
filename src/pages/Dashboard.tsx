@@ -8,14 +8,16 @@ import {
   DollarSign,
   LucideActivity,
   Clock,
+  Filter,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import OrderStatusChart from "@/features/dashboard/components/charts/OrderStatusChart";
 import MonthlyRegistrationsChart from "@/features/dashboard/components/charts/MonthlyRegistrationsChart";
 import { LastActivityAndBestCourses } from "@/features/dashboard/components/LastActivityAndBestCourses";
 import { QuickAction } from "@/features/dashboard/components/QuickAction";
 import { useFetch } from "@/hooks/useFetch";
 import { overviewServices } from "@/data/api";
+import { Select } from "react-day-picker";
+import TableOperations, { CustomFilter } from "@/components/shared/table/TableOperations";
 
 export default function Dashboard() {
   const { data } = useFetch({
@@ -58,11 +60,51 @@ export default function Dashboard() {
 
   return (
     <div>
+
+      <div className="flex w-full justify-between"> 
+
       <Heading
         title="لوحة التحكم"
         desc="نظرة شاملة علي اداء منصتك التعليمية"
         icon={ListStartIcon}
       />
+
+
+<div className="flex gap-2"> 
+
+
+  <CustomFilter 
+  resourse="من"
+  filters={[
+    {
+      label: "تاريخ البداية",
+      name: "duration",
+      type: "date",
+ 
+    }
+  ]}
+/>
+
+ <CustomFilter 
+  resourse="تاريخ الانتهاء"
+  filters={[
+    {
+      label: "تاريخ الانتهاء",
+      name: "duration",
+      type: "date",
+ 
+    }
+  ]}
+/>
+
+</div>
+   
+
+      
+
+
+
+      </div>
 
       {/* Cards */}
       <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-2">

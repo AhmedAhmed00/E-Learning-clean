@@ -78,7 +78,7 @@ export function FileUploadValidationDemo({ title, control, name }: FileUploadVal
               <FileUploadList>
                 {files.map((file) => (
                   <FileUploadItem key={file.name} value={file}>
-                    <FileUploadItemPreview />
+                    <FileUploadItemPreview  />
                     <FileUploadItemMetadata />
                     <FileUploadItemDelete asChild>
                       <Button variant="ghost" size="icon" className="size-7">

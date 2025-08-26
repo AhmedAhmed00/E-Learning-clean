@@ -77,11 +77,14 @@ interface Answer {
   is_correct: boolean;
 }
 export function CourseCard({
-average_stars,category,created_at,description,discount_percentage,final_price,id,instructor_name,instructor,is_offer,lectures,price,title,total_ratings,updated_at
+average_stars,category,created_at,description,discount_percentage,
+final_price,
+id,instructor_name,instructor,is_offer,
+lectures,price,title,total_ratings,updated_at
 }: Course) {
   return (
     <Card className="overflow-hidden rounded-2xl py-0 shadow-lg">
-      {/* الصورة + البادجات */}
+      {/* الصورة + البادجات */} 
       <div className="relative">
         <img src={"image"} alt="Course" className="w-full h-44 object-cover" />
         <div className="absolute top-3 left-3">
