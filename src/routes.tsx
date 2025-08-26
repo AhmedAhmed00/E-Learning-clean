@@ -10,6 +10,7 @@ import Employees from "./pages/EmployeesAndRoles";
 import Login from "./pages/Login";
 import TeacherDetails from "./features/teachers/TeacherDetails";
 import CourseDetails from "./features/courses/CourseDetails";
+import StudentDetails from "./features/students/StudentDetails";
 
 
 // Lazy imports
@@ -30,6 +31,7 @@ const protectedRoutes = [
       { path: "orders", element: <Orders /> },
       { path: "orders/view/:id", element: <Orders viewModal={true} /> },
       { path: "students", element: <Students /> },
+      { path: "students/view/:id", element: <StudentDetails /> },
       { path: "employees", element: <Employees /> },
     
     ],

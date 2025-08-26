@@ -235,7 +235,7 @@ export function ProfileInfoCard({ info }: ProfileInfoCardProps) {
             key={idx}
             className="flex items-center justify-between text-gray-700 text-sm border-b pb-2 last:border-b-0 last:pb-0"
           >
-            <span className="font-medium text-gray-500">{item.label}:</span>
+            <span className="font-medium text-gray-500">{item?.label}:</span>
             <span>{item.value}</span>
           </div>
         ))}

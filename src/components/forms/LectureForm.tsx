@@ -86,7 +86,7 @@ export function LectureForm({ id: course_id }: { id: number }) {
 
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>إضافة فصل </DialogTitle>
+          <DialogTitle>إضافة فصل</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
