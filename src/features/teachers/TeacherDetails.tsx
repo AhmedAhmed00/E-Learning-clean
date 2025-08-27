@@ -133,7 +133,6 @@ export default function TeacherDetails() {
   <TabsList className="mb-2">
     <TabsTrigger  value="overview">نظرة عامة</TabsTrigger>
     <TabsTrigger value="courses">الكورسات</TabsTrigger>
-    <TabsTrigger value="statistics">الاداء والإحصائيات</TabsTrigger>
   </TabsList>
  
 

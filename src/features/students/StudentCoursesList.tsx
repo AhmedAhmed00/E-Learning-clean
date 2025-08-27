@@ -1,129 +1,144 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
-import { BadgeCheck, BookOpen, Play } from "lucide-react";
+import {
+  BadgeCheck,
+  Play,
+  Calendar,
+  User,
+  ArrowRight,
+  Star,
+  Clock,
+  BarChart3,
+} from "lucide-react";
+import { useState } from "react";
 
-const courses = [
-  {
-    title: "أساسيات البرمجة بـ Python",
-    instructor: "أحمد محمود",
-    progress: 75,
-    lessonsCompleted: 15,
-    totalLessons: 20,
-    grade: "85%",
-    status: "نشط",
-    date: "2024/8/15",
-    completed: false,
-    hasGrade: true,
-  },
-  {
-    title: "تطوير المواقع الإلكترونية",
-    instructor: "فاطمة الأحمد",
-    progress: 100,
-    lessonsCompleted: 25,
-    totalLessons: 25,
-    grade: "92%",
-    status: "مكمل",
-    date: "2024/8/10",
-    completed: true,
-    hasGrade: true,
-  },
-  {
-    title: "التسويق الرقمي",
-    instructor: "محمد الشريف",
-    progress: 30,
-    lessonsCompleted: 5,
-    totalLessons: 15,
-    grade: "غير محدد",
-    status: "نشط",
-    date: "2024/8/20",
-    completed: false,
-    hasGrade: false,
-  },
-];
+export default function StudentCoursesList({ purchased_courses }) {
+  const [hoveredCard, setHoveredCard] = useState(null);
 
-export default function StudentCoursesList() {
   return (
-    <div className="space-y-6">
-      {courses.map((course, idx) => (
+    <div className="space-y-6 ">
+      {purchased_courses?.map((course) => (
         <Card
-          key={idx}
-          className="flex flex-col md:flex-row justify-between
-           items-start md:items-center p-6 gap-4 shadow-md rounded-2xl"
+          key={course.id}
+          className="group relative overflow-hidden bg-gradient-to-br from-white to-gray-50/80 
+                     border border-gray-200/70 hover:border-blue-100 hover:shadow-2xl 
+                     transition-all duration-300 rounded-2xl  transform hover:-translate-y-1"
+          onMouseEnter={() => setHoveredCard(course.id)}
+          onMouseLeave={() => setHoveredCard(null)}
         >
-          {/* Left: Course Info */}
-          <div className="flex-1 w-full">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {course.title}
-              </h3>
+          {/* Animated gradient overlay */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-blue-50/60 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-              <div className="flex items-center gap-2">
-                {course.completed ? (
-                  <span className="text-green-600 bg-green-100 text-sm px-2 py-1 rounded-full flex items-center gap-1">
-                    <BadgeCheck className="w-4 h-4" /> مكمل
+          {/* Course image thumbnail (optional) */}
+
+          <div className="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 pr-8">
+            {/* Left: Course Info */}
+            <div className="flex-1 w-full space-y-5">
+              {/* Course Title and Status */}
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-800 transition-colors duration-300">
+                    {course.title}
+                  </h3>
+
+                  <div className="flex items-center gap-2 text-gray-600 mb-3">
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">
+                      بواسطة المدرس {course.instructor_name}
+                    </span>
+                  </div>
+
+                  {/* Rating and duration */}
+
+                  <div className="flex items-center gap-4 mt-4">
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.round(course.average_stars)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                      <span className="text-sm text-gray-500 mr-1">
+                        {course.average_stars}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Price and Date Info */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl px-4 py-2.5 shadow-sm">
+                    <span className="text-xs text-emerald-800 font-medium">
+                      السعر المدفوع
+                    </span>
+                    <div className="font-bold text-emerald-900 text-lg">
+                      {course.purchased_price} ج.م
+                    </div>
+                  </div>
+
+                  <div className="hidden sm:block h-10 w-px bg-gray-200"></div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 shadow-sm">
+                    <span className="text-xs text-blue-800 font-medium">
+                      آخر دخول
+                    </span>
+                    <div className="font-medium text-blue-900 text-sm">
+                      منذ يومين
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-gray-500 bg-gray-50 py-1.5 px-3 rounded-lg">
+                  <Calendar className="w-4 h-4" />
+                  <span className="text-sm">
+                    تاريخ التسجيل:{" "}
+                    {new Date(course.purchased_at).toLocaleDateString("ar-EG")}
                   </span>
-                ) : (
-                  <span className="text-blue-600 bg-blue-100 text-sm px-2 py-1 rounded-full flex items-center gap-1">
-                    <Play className="w-4 h-4" /> نشط
-                  </span>
-                )}
+                </div>
               </div>
             </div>
 
-            <p className="text-sm text-gray-500 mb-2">
-              بواسطة {course.instructor}
-            </p>
-
-            <div className="mb-3">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>التقدم</span>
-                <span>{course.progress}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div
-                  className={`h-2 rounded-full ${
-                    course.progress === 100
-                      ? "bg-green-500"
-                      : course.progress >= 50
-                      ? "bg-yellow-500"
-                      : "bg-red-500"
-                  }`}
-                  style={{ width: `${course.progress}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>
-                الدروس: {course.lessonsCompleted}/{course.totalLessons}
-              </span>
-              <span>الدرجة: {course.grade}</span>
-            </div>
-
-            <p className="text-xs text-gray-400">
-              تاريخ التسجيل: {course.date}
-            </p>
+            {/* Right: Actions */}
+            <div className="flex flex-col items-center gap-4 lg:ml-6"></div>
           </div>
 
-          {/* Right: Actions */}
-          <div className="flex flex-col items-center gap-2">
-            {course.completed && (
-              <button className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full flex items-center gap-1">
-                <BookOpen className="w-4 h-4" />
-                الشهادة
-              </button>
-            )}
-            <button className="text-sm text-primary underline">
-              عرض التفاصيل
-            </button>
+          {/* Progress indicator */}
+          {/* <div className="mt-5 pt-5 border-t border-gray-100">
+            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+              <div className="flex items-center gap-1.5">
+                <BarChart3 className="w-4 h-4 text-blue-600" />
+                <span>التقدم في الكورس</span>
+              </div>
+              <span className="font-medium">75%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full transition-all duration-700 ease-out" 
+                style={{width: hoveredCard === course.id ? '75%' : '0%'}}
+              ></div>
+            </div> */}
+
+          {/* Lessons progress */}
+
+          {/* </div> */}
+
+          {/* Completion badge */}
+          <div className="absolute top-5 left-5">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
+              <div className="w-7 h-7 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                <BadgeCheck className="w-4 h-4 text-white" />
+              </div>
+            </div>
           </div>
         </Card>
       ))}
     </div>
   );
 }
-
-
-
-
-
-

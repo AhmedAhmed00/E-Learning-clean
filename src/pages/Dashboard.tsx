@@ -16,8 +16,10 @@ import { LastActivityAndBestCourses } from "@/features/dashboard/components/Last
 import { QuickAction } from "@/features/dashboard/components/QuickAction";
 import { useFetch } from "@/hooks/useFetch";
 import { overviewServices } from "@/data/api";
-import { Select } from "react-day-picker";
-import TableOperations, { CustomFilter } from "@/components/shared/table/TableOperations";
+import TableOperations, {
+  CustomFilter,
+} from "@/components/shared/table/TableOperations";
+import { OrderStatusChart } from "@/features/dashboard/components/charts/OrderStatusChart";
 
 export default function Dashboard() {
   const { data } = useFetch({
@@ -60,50 +62,36 @@ export default function Dashboard() {
 
   return (
     <div>
+      <div className="flex w-full justify-between">
+        <Heading
+          title="لوحة التحكم"
+          desc="نظرة شاملة علي اداء منصتك التعليمية"
+          icon={ListStartIcon}
+        />
 
-      <div className="flex w-full justify-between"> 
+        <div className="flex gap-2">
+          <CustomFilter
+            resourse="من"
+            filters={[
+              {
+                label: "تاريخ البداية",
+                name: "date_from",
+                type: "date",
+              },
+            ]}
+          />
 
-      <Heading
-        title="لوحة التحكم"
-        desc="نظرة شاملة علي اداء منصتك التعليمية"
-        icon={ListStartIcon}
-      />
-
-
-<div className="flex gap-2"> 
-
-
-  <CustomFilter 
-  resourse="من"
-  filters={[
-    {
-      label: "تاريخ البداية",
-      name: "duration",
-      type: "date",
- 
-    }
-  ]}
-/>
-
- <CustomFilter 
-  resourse="تاريخ الانتهاء"
-  filters={[
-    {
-      label: "تاريخ الانتهاء",
-      name: "duration",
-      type: "date",
- 
-    }
-  ]}
-/>
-
-</div>
-   
-
-      
-
-
-
+          <CustomFilter
+            resourse="تاريخ الانتهاء"
+            filters={[
+              {
+                label: "تاريخ الانتهاء",
+                name: "date_to",
+                type: "date",
+              },
+            ]}
+          />
+        </div>
       </div>
 
       {/* Cards */}
@@ -131,12 +119,23 @@ export default function Dashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 mb-8 lg:grid-cols-3 mt-6 gap-8">
-        <MonthlyRegistrationsChart data={[]} />
-        {/* <OrderStatusChart data={data?.} /> */}
+        <MonthlyRegistrationsChart data={data?.data?.last_months} />
+        
+        
+        
+        
+        
+        <OrderStatusChart data={{
+          pending_percentage:data?.data?.pending_percentage, 
+          declined_percentage:data?.data?.declined_percentage, 
+          accepted_percentage:data?.data?.accepted_percentage, 
+          
+          
+          }} />
       </div>
 
       {/* Last Activity + Best Courses */}
-      <LastActivityAndBestCourses />
+      <LastActivityAndBestCourses top_courses={data?.data?.top_courses} />
 
       {/* Quick Actions */}
       <div
@@ -151,19 +150,19 @@ export default function Dashboard() {
           <QuickAction
             to="/courses"
             icon={<BookOpen />}
-            title="إضافة كورس جديد"
+            title="إدارة الكورسات "
             description="إنشاء كورس تعليمي جديد"
           />
           <QuickAction
             to="/teachers"
             icon={<Users />}
-            title="إضافة مدرس"
+            title="إدارة المدرسين"
             description="دعوة مدرس جديد للمنصة"
           />
           <QuickAction
             to="/orders"
             icon={<Eye />}
-            title="مراجعة الطلبات"
+            title="إدارة الطلبات"
             description="مراجعة الطلبات المعلقة"
           />
         </div>

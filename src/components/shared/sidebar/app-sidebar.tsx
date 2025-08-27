@@ -61,11 +61,7 @@ const data = {
       url: "/students",
       icon: GraduationCap,
     },
-    {
-      title: "طلبات المحاضرات",
-      url: "/lecture-orders",
-      icon: VideoIcon,
-    },
+
     {
       title: "الإعلانات",
       url: "/ads",
@@ -84,21 +80,8 @@ const data = {
   ],
 
   navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
-    },
+    
+  
   ],
 };
 

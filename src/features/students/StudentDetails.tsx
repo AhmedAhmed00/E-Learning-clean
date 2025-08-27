@@ -1,13 +1,9 @@
-import { LectureForm } from "@/components/forms/LectureForm";
+"use client";
+
 import Heading from "@/components/shared/Heading";
 import RoundedCard from "@/components/shared/rounded-card";
 import { Card } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@radix-ui/react-tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import {
   BookOpen,
   CheckCircle2,
@@ -15,17 +11,35 @@ import {
   CreditCard,
   User,
 } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import StudentCoursesList from "./StudentCoursesList";
-
-const info = [
-  { label: "تاريخ الميلاد", value: "15 مارس 2001" },
-  { label: "العنوان", value: "الرياض، المملكة العربية السعودية" },
-  { label: "التعليم", value: "بكالوريوس في علوم الحاسب" },
-  { label: "المهنة", value: "طالب جامعي" },
-  { label: "آخر نشاط", value: "25 أغسطس 2025" },
-];
+import { useFetch } from "@/hooks/useFetch";
+import { studentsServices } from "@/data/api";
+import { useParams } from "react-router";
 
 export default function StudentDetails() {
+  const { id } = useParams();
+  const { data, isLoading } = useFetch({
+    service: studentsServices.getById,
+    id,
+    key: "student-details",
+  });
+
+  if (isLoading) return <p className="p-6">جار التحميل...</p>;
+  if (!data) return <p className="p-6">لم يتم العثور على بيانات الطالب</p>;
+
+  const studentInfo = [
+    { label: "الاسم", value: data.user?.name },
+    { label: "البريد الإلكتروني", value: data.user?.email },
+    { label: "رقم الهاتف", value: data.user?.phone },
+    { label: "التعليم", value: data.education_type },
+    {
+      label: "تاريخ التسجيل",
+      value: new Date(data.user_created_at).toLocaleDateString("ar-EG"),
+    },
+    { label: "الحالة", value: data.user_is_active ? "نشط" : "غير نشط" },
+  ];
+
   return (
     <div>
       {/* Header */}
@@ -38,31 +52,26 @@ export default function StudentDetails() {
         />
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats (dummy until backend provides) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto">
         <RoundedCard
           icon={BookOpen}
           iconBg="bg-blue-600 text-blue-600"
           title="الكورسات المسجلة"
-          number={2}
+          number={data?.courses_registered}
         />
         <RoundedCard
           icon={CheckCircle2}
           iconBg="bg-green-600 text-green-600"
           title="الكورسات المكتملة"
-          number={5}
+          number={data?.courses_completed}
         />
-        <RoundedCard
-          icon={BarChart2}
-          iconBg="bg-yellow-600 text-yellow-600"
-          title="متوسط التقدم"
-          number="75%"
-        />
+
         <RoundedCard
           icon={CreditCard}
           iconBg="bg-purple-600 text-purple-600"
           title="إجمالي الإنفاق"
-          number="250$"
+          number={data?.total_spent}
         />
       </div>
 
@@ -85,47 +94,49 @@ export default function StudentDetails() {
                 <h2 className="text-lg font-semibold text-gray-700">
                   معلومات شخصية
                 </h2>
-                <User className="text-primary" />
+                <Avatar className="w-[100px] h-[100px]">
+                  <AvatarImage
+                    src={data?.image}
+                    alt={data?.user?.name || "User"}
+                  />
+                  <AvatarFallback>
+                    {data?.user?.name
+                      ? data.user.name.charAt(0).toUpperCase()
+                      : "U"}
+                  </AvatarFallback>
+                </Avatar>
               </div>
 
               <div className="space-y-4">
-                {info.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between text-gray-700 text-sm border-b pb-2 last:border-b-0 last:pb-0"
-                  >
-                    <span className="font-medium text-gray-500">
-                      {item.label}:
-                    </span>
-                    <span>{item.value}</span>
-                  </div>
-                ))}
+                {studentInfo.map(
+                  (item, idx) =>
+                    item.value && (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between text-gray-700 text-sm border-b pb-2 last:border-b-0 last:pb-0"
+                      >
+                        <span className="font-medium text-gray-500">
+                          {item.label}:
+                        </span>
+                        <span>{item.value}</span>
+                      </div>
+                    ),
+                )}
               </div>
             </Card>
 
-
-       <RecentActivity />
+            {/* <RecentActivity /> */}
           </div>
-          
         </TabsContent>
 
         {/* Registered Courses Tab */}
         <TabsContent value="courses" className="mt-6">
-          <Card className="p-6 rounded-2xl shadow-md text-center">
-            <StudentCoursesList />
-          </Card>
+          <StudentCoursesList purchased_courses={data?.purchased_courses} />
         </TabsContent>
-
-
-
-        
       </Tabs>
     </div>
   );
 }
-
-
-
 
 const recentActivities = [
   {

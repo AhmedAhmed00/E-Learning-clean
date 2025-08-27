@@ -21,13 +21,22 @@ interface ChartDataItem {
   color: string;
 }
 
-interface OrderStatusChartProps {
-  data: ChartDataItem[];
+interface OrderStatusData {
+  pending_percentage: number;
+  declined_percentage: number;
+  accepted_percentage: number;
 }
 
-export default class OrderStatusChart extends Component<OrderStatusChartProps> {
+interface OrderStatusChartProps {
+  data: OrderStatusData;
+}
+
+export class OrderStatusChart extends Component<OrderStatusChartProps> {
   render() {
     const { data } = this.props;
+
+    // Convert backend data object to chart array
+    const chartData = transformDataToChartArray(data);
 
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
@@ -39,7 +48,7 @@ export default class OrderStatusChart extends Component<OrderStatusChartProps> {
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
-              data={data}
+              data={chartData}
               cx="50%"
               cy="50%"
               innerRadius={60}
@@ -47,7 +56,7 @@ export default class OrderStatusChart extends Component<OrderStatusChartProps> {
               paddingAngle={5}
               dataKey="value"
             >
-              {data.map((entry, idx) => (
+              {chartData.map((entry, idx) => (
                 <Cell key={idx} fill={entry.color} />
               ))}
             </Pie>
@@ -56,7 +65,7 @@ export default class OrderStatusChart extends Component<OrderStatusChartProps> {
         </ResponsiveContainer>
 
         <div className="mt-4 space-y-2">
-          {data.map((item, index) => (
+          {chartData.map((item, index) => (
             <div key={index} className="flex justify-between">
               <div className="flex items-center space-x-2 space-x-reverse">
                 <div
@@ -65,7 +74,9 @@ export default class OrderStatusChart extends Component<OrderStatusChartProps> {
                 />
                 <span className="text-sm text-gray-600 dark:text-gray-400">{item.name}</span>
               </div>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">{item.value}%</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                {item.value}%
+              </span>
             </div>
           ))}
         </div>
@@ -73,3 +84,24 @@ export default class OrderStatusChart extends Component<OrderStatusChartProps> {
     );
   }
 }
+
+// Function to transform backend data object into chart array
+const transformDataToChartArray = (dataObj: OrderStatusData): ChartDataItem[] => {
+  return [
+    {
+      name: "مقبول",
+      value: dataObj.accepted_percentage,
+      color: "#10B981", // Green
+    },
+    {
+      name: "في الانتظار",
+      value: dataObj.pending_percentage,
+      color: "#F59E0B", // Yellow/Orange
+    },
+    {
+      name: "مرفوض",
+      value: dataObj.declined_percentage,
+      color: "#EF4444", // Red
+    },
+  ].filter((item) => item.value > 0); // Only show items with values > 0
+};

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import {  Trash2, Loader2 } from 'lucide-react'
+import {  Trash2, Loader2, Eye } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import BASEURL, { apiRequest } from '@/data/api'
@@ -24,6 +24,7 @@ interface JobCardProps {
 export function JobCard({ role }: JobCardProps) {
   const queryClient = useQueryClient()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false)
 
   const deleteRoleMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -52,7 +53,15 @@ export function JobCard({ role }: JobCardProps) {
     setIsDeleteDialogOpen(false)
   }
 
+  const handleShowMorePermissions = () => {
+    setIsPermissionsModalOpen(true)
+  }
+
   const isDeleting = deleteRoleMutation.isPending
+
+  // Show only first 4 permissions
+  const visiblePermissions = role?.permissions?.slice(0, 4) || []
+  const hasMorePermissions = (role?.permissions?.length || 0) > 4
 
   return (
     <Card className="w-full bg-white shadow-lg border border-gray-200 rounded-lg">
@@ -80,7 +89,7 @@ export function JobCard({ role }: JobCardProps) {
         <div className="mb-4">
           <p className="text-gray-700 font-medium mb-3">الصلاحيات:</p>
           <div className="flex flex-wrap gap-2">
-            {role?.permissions?.map((permission, index) => (
+            {visiblePermissions.map((permission, index) => (
               <span
                 key={index}
                 className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm border border-blue-200"
@@ -88,6 +97,16 @@ export function JobCard({ role }: JobCardProps) {
                 {permission.name}
               </span>
             ))}
+            
+            {/* Show More Button */}
+            {hasMorePermissions && (
+              <button
+                onClick={handleShowMorePermissions}
+                className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm border border-gray-200 hover:bg-gray-200 transition-colors cursor-pointer"
+              >
+                عرض المزيد ({role.permissions.length - 4})
+              </button>
+            )}
           </div>
         </div>
 
@@ -99,10 +118,6 @@ export function JobCard({ role }: JobCardProps) {
             id:role?.id
           }}/>
           
-          
-          
-         
-
           <Button
             variant="ghost"
             size="sm"
@@ -115,10 +130,47 @@ export function JobCard({ role }: JobCardProps) {
         </div>
       </CardContent>
 
+      {/* Permissions Modal */}
+      <Dialog open={isPermissionsModalOpen} onOpenChange={setIsPermissionsModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle >
+              جميع الصلاحيات - {role?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <p className="text-sm text-gray-600 mb-4">
+              إجمالي الصلاحيات: {role?.permissions?.length || 0}
+            </p>
+            
+            <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto">
+              {role?.permissions?.map((permission, index) => (
+                <span
+                  key={index}
+                  className="bg-blue-50 text-blue-700 px-3 py-2 rounded-full text-sm border border-blue-200"
+                >
+                  {permission.name}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsPermissionsModalOpen(false)}
+            >
+              إغلاق
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Confirmation Dialog */}
-      <Dialog   open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent  className="sm:max-w-md ">
-          <DialogHeader className='mx-auto' >
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className='mx-auto'>
             <DialogTitle>تأكيد الحذف</DialogTitle>
           </DialogHeader>
           

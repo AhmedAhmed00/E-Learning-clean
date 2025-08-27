@@ -10,15 +10,20 @@ import {
   AreaChart,
 } from "recharts";
 
-// You can move this type to a shared types file if reused elsewhere
 export interface MonthlyData {
   month: string;
   students: number;
   revenue: number;
 }
 
+interface RawMonthlyData {
+  month: string;
+  total_students: number;
+  total_profit: number;
+}
+
 interface MonthlyRegistrationsChartProps {
-  data?: MonthlyData[];
+  data?: RawMonthlyData[];
 }
 
 const tooltipStyle: React.CSSProperties = {
@@ -32,9 +37,15 @@ const tooltipStyle: React.CSSProperties = {
 export default function MonthlyRegistrationsChart({
   data = [],
 }: MonthlyRegistrationsChartProps): JSX.Element {
+  // transform data into the shape recharts expects
+  const chartData: MonthlyData[] = data.map((item) => ({
+    month: item.month,
+    students: item.total_students,
+    revenue: item.total_profit,
+  }));
+
   return (
     <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-      
       <div className="flex justify-between mb-6">
         <div>
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -51,7 +62,7 @@ export default function MonthlyRegistrationsChart({
       </div>
 
       <ResponsiveContainer width="100%" height={300}>
-        <AreaChart data={data}>
+        <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -67,6 +78,7 @@ export default function MonthlyRegistrationsChart({
           <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
           <YAxis stroke="#6b7280" fontSize={12} />
           <Tooltip contentStyle={tooltipStyle} />
+
           <Area
             type="monotone"
             dataKey="students"

@@ -71,7 +71,7 @@ export default function Ads() {
         
     </div>
             <CustomTable
-        actions={["view","delete","edit"]}
+        actions={["delete","edit"]}
         loading={false}
         modalName="ads"
         endpoint={`employee/ads`}
