@@ -2,6 +2,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Clock, Users } from "lucide-react";
+import { LectureForm } from "@/components/forms/LectureForm";
+import { useParams } from "react-router";
 type CourseCardProps = {
   price: number;
   title: string;
@@ -24,7 +26,8 @@ export  function CourseHeading({
   tags,
   image,
 }: CourseCardProps) {
-  return (
+  const {id} = useParams()
+  return ( 
     <Card className="flex  flex-col md:flex-row items-center justify-between gap-4 p-4 shadow-md rounded-2xl">
  
   <div className="min-w-[120px]">
@@ -70,6 +73,8 @@ export  function CourseHeading({
             </Badge>
           ))}
         </div>
+                      <LectureForm id={id} />
+
       </div>
     </Card>
   );

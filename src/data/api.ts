@@ -170,14 +170,18 @@ export const ORDERS = `/course/student-orders-employee/`;
 export const ROLES = `/employee/groups-with-permissions/`;
 export const OVERVIEW = `/dashboard/overview/`;
 export const ADS = `/employee/ads/`;
+export const INSCOURSES = `/course/simple-courses/`;
+export const CATEGORIES = `/course/categories/?paginated=false/`;
 
 export const coursesServices = createService(COURSES);
+export const insCourses = createService(INSCOURSES);
 export const employeesServices = createService(EMPLOYEES);
 export const studentsServices = createService(STUDENTS);
 export const tachersServices = createService(TEACHERS);
 export const ordersServices = createService(ORDERS);
 export const rolesServices = createService(ROLES);
 export const overviewServices = createService(OVERVIEW);
-export const adsServices = createService(ADS)
+export const adsServices = createService(ADS);
+export const categoriesServices = createService(CATEGORIES);
 
 export default BASEURL;

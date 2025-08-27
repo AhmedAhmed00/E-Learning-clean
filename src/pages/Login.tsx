@@ -66,8 +66,8 @@ export default function Login() {
                       <PhoneInput
                         country={"us"} // default Egypt 🇪🇬
                         value={field.value}
-                        // onChange={(value) => field.onChange("+" + value)}
-                        onChange={(value) => field.onChange( value)}
+                        onChange={(value) => field.onChange("+" + value)}
+                        // onChange={(value) => field.onChange( value)}
                         inputClass="!w-full  !h-10 !text-base"
                         buttonClass="!h-10 "
                        

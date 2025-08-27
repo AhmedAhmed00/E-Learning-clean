@@ -1,24 +1,28 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { insCourses } from "@/data/api"
+import useDelete from "@/hooks/useDelete"
 import {
   Users,
-
   User,
   Trash2,
   Pencil,
   Eye,
 } from "lucide-react"
 import { Link } from "react-router"
-
-export interface CardItem {
-  id: number
-  image: string
-  leftText: string
-  rightText: string
-  bottomText: string
-}
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { CourseForm } from "@/components/forms/CourseForm"
 
 interface Course {
   id: number;
@@ -27,10 +31,10 @@ interface Course {
   category: number;
   instructor: number;
   lectures: Lecture[];
-  created_at: string; // ISO Date string
-  updated_at: string; // ISO Date string
-  price: string; // comes as string "120.00"
-  instructor_name:string
+  created_at: string;
+  updated_at: string;
+  price: string;
+  instructor_name: string;
   is_offer: boolean;
   final_price: number;
   total_ratings: number;
@@ -50,13 +54,13 @@ interface Lecture {
 interface Video {
   id: number;
   title: string;
-  video: string; // URL
+  video: string;
 }
 
 interface LectureFile {
   id: number;
   title: string;
-  file: string; // URL
+  file: string;
 }
 
 interface Quiz {
@@ -76,15 +80,25 @@ interface Answer {
   text: string;
   is_correct: boolean;
 }
+
 export function CourseCard({
-average_stars,category,created_at,description,discount_percentage,
-final_price,
-id,instructor_name,instructor,is_offer,
-lectures,price,title,total_ratings,updated_at
+  average_stars,
+  description,
+  id,
+  instructor_name,
+  title,
+  defaultValues
 }: Course) {
+  const { mutate: delCourse } = useDelete({
+    service: insCourses.delete,
+    key: "courses",
+    resource: "الكورس",
+  })
+  
+
   return (
     <Card className="overflow-hidden rounded-2xl py-0 shadow-lg">
-      {/* الصورة + البادجات */} 
+      {/* الصورة + البادجات */}
       <div className="relative">
         <img src={"image"} alt="Course" className="w-full h-44 object-cover" />
         <div className="absolute top-3 left-3">
@@ -97,41 +111,56 @@ lectures,price,title,total_ratings,updated_at
 
       {/* المحتوى */}
       <CardContent className="p-4 space-y-2">
-        {/* العنوان */}
         <h3 className="text-lg font-bold">{title}</h3>
 
-        {/* بيانات إضافية */}
         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
           <div className="flex items-center gap-1">
             <User className="w-4 h-4" /> {instructor_name}
           </div>
-          {/* <div className="flex items-center gap-1">
-            <Clock className="w-4 h-4" /> 8 أسابيع
-          </div> */}
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" /> 156 طالب
           </div>
         </div>
 
-        {/* السعر */}
         <p className="text-xl font-bold text-blue-600 mt-2">$299</p>
       </CardContent>
 
       {/* الأزرار */}
       <CardFooter className="flex items-center justify-between p-4 border-t">
         <div className="flex items-center gap-2">
-          <Button size="icon" variant="destructive">
-            <Trash2 className="w-4 h-4" />
-          </Button>
-          <Button size="icon" variant="outline">
-            <Pencil className="w-4 h-4" />
-          </Button>
+          {/* ✅ زر الحذف مع AlertDialog */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="icon" variant="destructive">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+                <AlertDialogDescription>
+                  سيتم حذف هذا الكورس نهائيًا ولا يمكن التراجع عن ذلك.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => delCourse(id)} // ✅ الحذف عند التأكيد
+                >
+                  حذف
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+            <CourseForm  defaultValues={defaultValues} />
         </div>
-        <Link to={`${id}`}> 
-        <Button variant="secondary" className="flex items-center gap-2">
-          <Eye className="w-4 h-4" />
-          عرض التفاصيل
-        </Button>
+
+        <Link to={`${id}`}>
+          <Button variant="secondary" className="flex items-center gap-2">
+            <Eye className="w-4 h-4" />
+            عرض التفاصيل
+          </Button>
         </Link>
       </CardFooter>
     </Card>

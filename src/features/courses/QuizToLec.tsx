@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Loader2, PlusIcon } from "lucide-react";
 import BASEURL, { apiRequest } from "@/data/api";
 
@@ -34,11 +35,16 @@ const answerSchema = z.object({
 
 const questionSchema = z.object({
   text: z.string().min(1, "نص السؤال مطلوب"),
+  question_type: z.enum(["mcq", "tof"], {
+    required_error: "حدد نوع السؤال",
+  }),
   answers: z.array(answerSchema).min(2, "أضف على الأقل إجابتين"),
 });
 
 const quizSchema = z.object({
   title: z.string().min(3, "عنوان الاختبار مطلوب"),
+  description: z.string().min(5, "الوصف مطلوب"),
+  success_rate: z.coerce.number().min(1).max(100),
   questions: z.array(questionSchema).min(1, "أضف سؤالاً واحدًا على الأقل"),
 });
 
@@ -52,6 +58,8 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
     resolver: zodResolver(quizSchema),
     defaultValues: {
       title: "",
+      description: "",
+      success_rate: 70,
       questions: [],
     },
   });
@@ -59,7 +67,6 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
   const {
     fields: questionFields,
     append: appendQuestion,
-    remove: removeQuestion,
   } = useFieldArray({
     control: form.control,
     name: "questions",
@@ -68,6 +75,7 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
   const handleAddQuestion = () => {
     appendQuestion({
       text: "",
+      question_type: "mcq",
       answers: [
         { text: "", is_correct: false },
         { text: "", is_correct: false },
@@ -94,31 +102,21 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
     setIsSubmitting(true);
 
     try {
-      // Step 1: Create quiz
-      const quizRes = await apiRequest("post", `${BASEURL}/course/simple-quizzes`, {
+      const payload = {
+        lecture: lecture_id,
         title: data.title,
-        lecture_id,
-      });
+        description: data.description,
+        success_rate: data.success_rate,
+        questions: data.questions.map((q) => ({
+          text: q.text,
+          question_type: q.question_type,
+          answers: q.answers,
+        })),
+      };
 
-      const quiz_id = quizRes.id;
+      console.log("Submitting payload:", payload);
 
-      // Step 2: For each question, create it then add its answers
-      for (const question of data.questions) {
-        const questionRes = await apiRequest("post", `${BASEURL}/course/simple-questions/`, {
-          text: question.text,
-          quiz_id,
-        });
-
-        const question_id = questionRes.id;
-
-        for (const answer of question.answers) {
-          await apiRequest("post", `${BASEURL}/course/simple-answers/`, {
-            text: answer.text,
-            question_id,
-            is_correct: answer.is_correct,
-          });
-        }
-      }
+      await apiRequest("post", `${BASEURL}/course/simple-quizzes/`, payload);
 
       form.reset();
       setOpenModal(false);
@@ -159,6 +157,34 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>الوصف</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="وصف الاختبار" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="success_rate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>نسبة النجاح (%)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="مثال: 70" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {questionFields.map((question, qIndex) => (
               <div key={question.id} className="border p-4 rounded-md space-y-4">
                 <FormField
@@ -170,6 +196,21 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
                       <FormControl>
                         <Input placeholder="نص السؤال" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`questions.${qIndex}.question_type`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>نوع السؤال</FormLabel>
+                      <select {...field} className="border rounded px-2 py-1">
+                        <option value="mcq">اختيار من متعدد</option>
+                        <option value="tof">صح / خطأ</option>
+                      </select>
                       <FormMessage />
                     </FormItem>
                   )}

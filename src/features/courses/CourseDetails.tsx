@@ -7,7 +7,7 @@ import { LectureCard } from "./LectureCard";
 import { LectureForm } from "@/components/forms/LectureForm";
 import useFetchById from "@/hooks/useFetchById";
 import { useParams } from "react-router";
-import { coursesServices } from "@/data/api";
+import { coursesServices, insCourses } from "@/data/api";
 
 // --- Interfaces ---
 interface Course {
@@ -74,7 +74,7 @@ interface Answer {
 // --- Main Component ---
 export default function CourseDetails() {
   const { id } = useParams();
-  const { data, isLoading, error } = useFetchById<Course>("course", id, coursesServices.getById);
+  const { data, isLoading, error } = useFetchById<Course>("course", id,  localStorage.getItem("role") ==="employee"?    coursesServices.getById : insCourses.getById);
 
   if (isLoading) {
     return <div>جاري التحميل...</div>;
@@ -113,6 +113,8 @@ export default function CourseDetails() {
           "https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg"
         }
       />
+      
+      
 
       {/* Tabs Section */}
       <Tabs defaultValue="content" className="w-full mt-10">
@@ -127,10 +129,9 @@ export default function CourseDetails() {
 
         {/* Content Tab */}
         <TabsContent value="content" className="mt-6 space-y-6">
-          <div className="flex w-full justify-between">
+          {/* <div className="flex w-full justify-between">
             <h3>محتوي الكورس</h3>
-            <h3>محتوي الكورس</h3>
-          </div>
+          </div> */}
 
           {/* Course Overview */}
           <div className="bg-white shadow-2xl p-6 rounded-2xl">
@@ -160,7 +161,6 @@ export default function CourseDetails() {
               </CardContent>
 
               {/* Lecture Form */}
-              <LectureForm id={id} />
             </div>
 
             {/* Lectures List */}
