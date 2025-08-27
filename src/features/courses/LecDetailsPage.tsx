@@ -200,13 +200,10 @@ const QuizEditDialog = ({ quiz }) => {
     defaultValues: {
       title: quiz.title,
       success_rate: quiz.success_rate,
+      description: quiz.description,
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "questions",
-  });
 
   const { mutate: updateQuiz } = useUpdate({
     service: (id, body) =>
@@ -223,6 +220,7 @@ const QuizEditDialog = ({ quiz }) => {
       id: quiz.id,
       title: data.title,
       success_rate: Number(data.success_rate),
+      description: data.description,
     //   questions: updatedQuestions,
     };
 
@@ -252,7 +250,15 @@ const QuizEditDialog = ({ quiz }) => {
             <Label htmlFor="quiz-title">عنوان الاختبار</Label>
             <Input
               id="quiz-title"
-              {...register("title", { required: true })}
+              {...register("title", { required: false })}
+            />
+          </div>
+         
+          <div className="space-y-2">
+            <Label htmlFor="description">الوصف</Label>
+            <Input
+              id="description"
+              {...register("description", { required: false })}
             />
           </div>
           <div className="space-y-2">
