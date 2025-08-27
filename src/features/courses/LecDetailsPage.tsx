@@ -210,7 +210,7 @@ const QuizEditDialog = ({ quiz }) => {
 
   const { mutate: updateQuiz } = useUpdate({
     service: (id, body) =>
-      apiRequest("patch", `${BASEURL}/course/simple-questions/${id}/`, body),
+      apiRequest("patch", `${BASEURL}/course/simple-quizzes/${id}/`, body),
     key: "lecture",
     resourse: "file",
   });
