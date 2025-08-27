@@ -76,7 +76,7 @@ export default function Students() {
   {
     id: 3,
     title: "متوسط الطلاب لكل كورس",
-       number: "-----", 
+       number: results?.average_students_in_courses,
     icon: BookOpen,
     iconBg: "bg-yellow-500",
     desc: "طلاب توقفوا عن الكورسات",

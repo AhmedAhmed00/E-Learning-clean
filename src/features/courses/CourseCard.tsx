@@ -121,7 +121,6 @@ export function CourseCard({
             <Users className="w-4 h-4" /> 156 طالب
           </div>
         </div>
-
         <p className="text-xl font-bold text-blue-600 mt-2">$299</p>
       </CardContent>
 

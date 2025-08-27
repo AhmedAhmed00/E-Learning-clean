@@ -127,7 +127,7 @@ const CustomTable = ({
                           <DeleteRowModal id={item.id} modelName={modalName} endpoint={endpoint} />
                         )}
                         {actions.includes("view") && (
-                          <Link   to={`/${modalName}/view/${item.id}`}>
+                          <Link ؤ   to={`/${modalName}/view/${item.id}`}>
                             <Eye size={16} />
                           </Link>
                         )}

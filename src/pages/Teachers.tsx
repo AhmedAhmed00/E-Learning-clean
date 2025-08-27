@@ -16,7 +16,7 @@ import { useFetch } from "@/hooks/useFetch";
 
 export default function Teachers() {
   const { data: { results: teachers = [], count } = {}, isLoading } = useFetch({
-    service: tachersServices.getAll,
+    service:  tachersServices.getAll,
     key: "teachers",
   });
 
@@ -36,6 +36,7 @@ export default function Teachers() {
       </div>
 
       {/* عمليات علي الجدول */}
+      
       <div>
         <TableOperations  filters={[
             {

@@ -30,7 +30,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusIcon, PencilIcon } from "lucide-react"
 import { FileUploadValidationDemo } from "./Files"
 import usePost from "@/hooks/usePost"
-import { categoriesServices, insCourses } from "@/data/api"
+import { categoriesServices, insCourses, tachersServices } from "@/data/api"
 import { useFetch } from "@/hooks/useFetch"
 import useUpdate from "@/hooks/useUpdate"
 import { DevTool } from "@hookform/devtools"
@@ -38,6 +38,7 @@ import { DevTool } from "@hookform/devtools"
 // ✅ Schema
 const courseSchema = z.object({
   category: z.string().min(1, "اختر التصنيف"),
+  teacher: z.string().min(1, "اختر المدرس"), // 👈 teacher مستقل
   title: z.string().min(3, "يجب أن يحتوي العنوان على 3 أحرف على الأقل"),
   description: z.string().min(10, "الوصف قصير جدًا"),
   price: z.string().refine((val) => !isNaN(Number(val)), { message: "السعر يجب أن يكون رقم" }),
@@ -45,7 +46,7 @@ const courseSchema = z.object({
     .string()
     .optional()
     .refine((val) => !val || !isNaN(Number(val)), { message: "يجب أن يكون رقم" }),
-  image: z.instanceof(File, { error: "صورة الكورس مطلوبة" })
+  image: z.instanceof(File, { error: "صورة الكورس مطلوبة" }),
 })
 
 type CourseFormValues = z.infer<typeof courseSchema>
@@ -56,9 +57,9 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
 
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseSchema),
-    defaultValues: 
-      {
+    defaultValues: {
       category: "",
+      teacher: "", // 👈 default teacher
       title: "",
       description: "",
       price: "",
@@ -70,15 +71,27 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
   // reset when defaultValues change (for edit mode)
   useEffect(() => {
     if (defaultValues) {
-      form.reset({...defaultValues, 
-        category:String(defaultValues?.category),
-        discount_percentage:String(defaultValues?.discount_percentage),
+      form.reset({
+        ...defaultValues,
+        category: String(defaultValues?.category ?? ""),
+        teacher: String(defaultValues?.teacher ?? ""),
+        discount_percentage: String(defaultValues?.discount_percentage ?? ""),
       })
     }
   }, [defaultValues, form])
 
+  const { data: { results: resOfCategories } = {} } = useFetch({
+    service: categoriesServices.getAll,
+    key: "categories",
+  })
+
+  const { data: { results: resultsOfTeachers } = {} } = useFetch({
+    service: tachersServices.getAll,
+    key: "teachers",
+  })
+
   const { mutate: addCourse } = usePost({
-    service: insCourses.create,
+    service: insCourses.create,  
     key: "courses",
     resource: "course",
   })
@@ -89,14 +102,10 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
     resource: "course",
   })
 
-  const { data: { results: resOfCategories } = {} } = useFetch({
-    service: categoriesServices.getAll,
-    key: "categories",
-  })
-
   function onSubmit(values: CourseFormValues) {
     const formData = new FormData()
     formData.append("category", values.category)
+    formData.append("instructor", values.teacher) 
     formData.append("title", values.title)
     formData.append("description", values.description)
     formData.append("price", values.price)
@@ -110,11 +119,7 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
     if (isEditMode && defaultValues?.id) {
       updateCourse(
         { id: defaultValues.id, data: formData },
-        {
-          onSuccess: () => {
-            setOpen(false)
-          },
-        }
+        { onSuccess: () => setOpen(false) }
       )
     } else {
       addCourse(formData, {
@@ -132,7 +137,6 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
         {isEditMode ? (
           <Button variant="outline" className="text-[16px] mx-2">
             <PencilIcon className="mr-2" />
-            
           </Button>
         ) : (
           <Button className="text-[16px] mx-8">
@@ -172,7 +176,7 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>التصنيف</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value }>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="اختر تصنيف الكورس" />
@@ -182,6 +186,32 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
                         {resOfCategories?.map((cat: { id: number; name: string }) => (
                           <SelectItem key={cat.id} value={String(cat.id)}>
                             {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Teacher */}
+              <FormField
+                control={form.control}
+                name="instructor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>المدرس</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="اختر المدرس" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {resultsOfTeachers?.map((t: { id: number; user_name: string }) => (
+                          <SelectItem key={t.id} value={String(t.id)}>
+                            {t.user_name}
                           </SelectItem>
                         ))}
                       </SelectContent>

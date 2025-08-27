@@ -8,6 +8,7 @@ import { LectureForm } from "@/components/forms/LectureForm";
 import useFetchById from "@/hooks/useFetchById";
 import { useParams } from "react-router";
 import { coursesServices, insCourses } from "@/data/api";
+import CustomTable from "@/components/shared/table/CustomTable";
 
 // --- Interfaces ---
 interface Course {
@@ -71,10 +72,36 @@ interface Answer {
   is_correct: boolean;
 }
 
+
+
+const studentCols = [
+  { label: "الرقم", key: "student_id" },
+  { label: "صورة الطالب", key: "student_image" ,    render: (imageUrl: string) => (<div className= "ms-10 bg-red-900 rounded-2xl w-32 justify-self-center  h-22"> 
+ <img
+        src={imageUrl}
+        alt="صورة"
+        className=" object-cover w-full h-full rounded-2xl"
+      />
+    </div>
+     
+    )},
+  { label: "مستوي التعليم", key: "education_type" },
+  { label: "اسم الطالب", key: "student_name" },
+  { label: "ايميل الطالب ", key: "student_email" , },
+  { label: "السعر", key: "price" },
+  { label: "تاريخ الشراء", key: "purchased_at" } 
+]
+
+
+
 // --- Main Component ---
 export default function CourseDetails() {
   const { id } = useParams();
   const { data, isLoading, error } = useFetchById<Course>("course", id,  localStorage.getItem("role") ==="employee"?    coursesServices.getById : insCourses.getById);
+  
+  
+  
+  
 
   if (isLoading) {
     return <div>جاري التحميل...</div>;
@@ -129,9 +156,9 @@ export default function CourseDetails() {
 
         {/* Content Tab */}
         <TabsContent value="content" className="mt-6 space-y-6">
-          {/* <div className="flex w-full justify-between">
+          <div className="flex w-full justify-between">
             <h3>محتوي الكورس</h3>
-          </div> */}
+          </div>
 
           {/* Course Overview */}
           <div className="bg-white shadow-2xl p-6 rounded-2xl">
@@ -147,10 +174,7 @@ export default function CourseDetails() {
                     <Users className="w-4 h-4" />
                     <span>{data?.lectures?.length ?? 0} محاضرة</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    <span>غير متوفرة</span>
-                  </div>
+                  
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                     <span>
@@ -186,7 +210,10 @@ export default function CourseDetails() {
         {/* Students Tab */}
         <TabsContent value="students" className="mt-6">
           <Card className="p-6 rounded-2xl shadow-md text-center">
-            <p className="text-gray-600">قائمة الطلاب ستظهر هنا</p>
+            
+            
+            <CustomTable modalName={"students"}  actions={['view']} columns={studentCols} data={data?.students_details} />
+            
           </Card>
         </TabsContent>
       </Tabs>
