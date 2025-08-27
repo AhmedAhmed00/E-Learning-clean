@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useUpdate from "@/hooks/useUpdate";
 import BASEURL, { apiRequest, lecServices } from "@/data/api";
 import { compareChanges, prepareFormData } from "@/lib/helpers";
@@ -200,7 +200,6 @@ const QuizEditDialog = ({ quiz }) => {
     defaultValues: {
       title: quiz.title,
       success_rate: quiz.success_rate,
-      questions: quiz.questions || [], // MCQ/TOF questions array
     },
   });
 
@@ -218,17 +217,13 @@ const QuizEditDialog = ({ quiz }) => {
 
   const onSubmit = (data) => {
     // Transform answers into expected format if necessary
-    const updatedQuestions = data.questions.map((q) => ({
-      ...q,
-      grade: Number(q.grade),
-      answers: q.answers.map((a) => ({ ...a })),
-    }));
+  
 
     const body = {
       id: quiz.id,
       title: data.title,
       success_rate: Number(data.success_rate),
-      questions: updatedQuestions,
+    //   questions: updatedQuestions,
     };
 
     updateQuiz({ id: quiz.id, body });
@@ -238,12 +233,12 @@ const QuizEditDialog = ({ quiz }) => {
 
   return (
     <Dialog  open={open} onOpenChange={setOpen}>
-      {/* <DialogTrigger asChild>
+      <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Pencil className="w-4 h-4" />
           تعديل الاختبار
         </Button>
-      </DialogTrigger> */}
+      </DialogTrigger>
 
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-scroll">
         <DialogHeader>
@@ -272,7 +267,7 @@ const QuizEditDialog = ({ quiz }) => {
           </div>
 
           {/* Questions */}
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             {fields.map((question, qIndex) => (
               <div key={question.id} className="border p-4 rounded space-y-2">
                 <div className="flex justify-between items-center">
@@ -300,10 +295,10 @@ const QuizEditDialog = ({ quiz }) => {
                 <Select {...register(`questions.${qIndex}.question_type`)}>
                   <option value="mcq">MCQ</option>
                   <option value="tof">True/False</option>
-                </Select>
+                </Select> */}
 
                 {/* Answers */}
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   {question.answers?.map((answer, aIndex) => (
                     <div key={aIndex} className="flex items-center space-x-2">
                       <Input
@@ -326,10 +321,10 @@ const QuizEditDialog = ({ quiz }) => {
                   ))}
                 </div>
               </div>
-            ))}
-          </div>
+            ))} */}
+          {/* </div> */}
 
-          <Button
+          {/* <Button
             type="button"
             onClick={() =>
               append({
@@ -344,7 +339,7 @@ const QuizEditDialog = ({ quiz }) => {
             }
           >
             إضافة سؤال جديد
-          </Button>
+          </Button> */}
 
           <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
@@ -358,28 +353,42 @@ const QuizEditDialog = ({ quiz }) => {
   );
 };
 
-  // Question Edit Dialog Component
- const QuestionEditDialog = ({ question, quizId }) => {
+  // Question Edit Dialo`g Component
+const QuestionEditDialog = ({ question, quizId }) => {
   const [open, setOpen] = useState(false);
-  
-  const { mutate: updateQuizQuestion } = useUpdate({ service: (id, body) => apiRequest("patch", `${BASEURL}/course/simple-questions/${question.id}/`, body), key: "lecture", resourse: "question", });
+
+  const { mutate: updateQuizQuestion } = useUpdate({
+    service: (id, body) =>
+      apiRequest("patch", `${BASEURL}/course/simple-questions/${question.id}/`, body),
+    key: "lecture",
+    resourse: "question",
+  });
 
   const { register, handleSubmit, control, watch, reset } = useForm({
     defaultValues: {
       text: question.text,
       question_type: question.question_type || "mcq",
       grade: question.grade,
-      answers: question.answers
-    }
+      answers: question.answers || [],
+    },
   });
-  
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove, update, replace } = useFieldArray({
     control,
-    name: "answers"
+    name: "answers",
   });
 
   const watchQuestionType = watch("question_type");
+
+  // Whenever the question type changes to TOF, replace answers with True/False
+  useEffect(() => {
+    if (watchQuestionType === "tof") {
+      replace([
+        { text: "True", is_correct: true },
+        { text: "False", is_correct: false },
+      ]);
+    }
+  }, [watchQuestionType, replace]);
 
   const onSubmit = (data) => {
     const body = {
@@ -387,27 +396,29 @@ const QuizEditDialog = ({ quiz }) => {
       text: data.text,
       question_type: data.question_type,
       grade: parseInt(data.grade),
-      answers: data.answers.map(answer => ({
+      answers: data.answers.map((answer) => ({
         text: answer.text,
-        is_correct: answer.is_correct
-      }))
+        is_correct: answer.is_correct,
+      })),
     };
+
     updateQuizQuestion({ id: quizId, body });
     setOpen(false);
     reset();
   };
 
   const addAnswer = () => {
-    if (watchQuestionType === "tof" && fields.length >= 2) return;
+    if (watchQuestionType === "tof") return; // no extra answers for TOF
     append({ text: "", is_correct: false });
   };
 
-  const handleMCQCheck = (index) => {
-    fields.forEach((_, i) => {
-      update(i, { ...fields[i], is_correct: i === index });
-    });
-  };
-    const handleSingleCheck = (index) => {
+  const handleSingleCheck = (index) => {
+    if (watchQuestionType === "tof") {
+      update(0, { text: "True", is_correct: index === 0 });
+      update(1, { text: "False", is_correct: index === 1 });
+      return;
+    }
+    // For MCQ, only one correct answer
     fields.forEach((_, i) => {
       update(i, { ...fields[i], is_correct: i === index });
     });
@@ -430,7 +441,12 @@ const QuizEditDialog = ({ quiz }) => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="question-text">نص السؤال</Label>
-            <Textarea id="question-text" {...register("text")} placeholder="أدخل نص السؤال" rows={3} />
+            <Textarea
+              id="question-text"
+              {...register("text")}
+              placeholder="أدخل نص السؤال"
+              rows={3}
+            />
           </div>
 
           <div className="space-y-2">
@@ -454,7 +470,13 @@ const QuizEditDialog = ({ quiz }) => {
 
           <div className="space-y-2">
             <Label htmlFor="grade">الدرجة</Label>
-            <Input id="grade" type="number" min="1" {...register("grade")} placeholder="أدخل درجة السؤال" />
+            <Input
+              id="grade"
+              type="number"
+              min="1"
+              {...register("grade")}
+              placeholder="أدخل درجة السؤال"
+            />
           </div>
 
           <div className="space-y-4">
@@ -469,7 +491,10 @@ const QuizEditDialog = ({ quiz }) => {
 
             <div className="space-y-3">
               {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center space-x-2 p-3 border rounded-lg">
+                <div
+                  key={field.id}
+                  className="flex items-center space-x-2 p-3 border rounded-lg"
+                >
                   <Controller
                     name={`answers.${index}.is_correct`}
                     control={control}
@@ -481,24 +506,31 @@ const QuizEditDialog = ({ quiz }) => {
                     )}
                   />
                   <div className="flex-1">
-                    <Input {...register(`answers.${index}.text`)} placeholder="نص الإجابة" />
+                    <Input
+                      {...register(`answers.${index}.text`)}
+                      placeholder="نص الإجابة"
+                      disabled={watchQuestionType === "tof"}
+                    />
                   </div>
                   {watchQuestionType === "mcq" && fields.length > 2 && (
-                    <Button type="button" variant="outline" size="sm" onClick={() => remove(index)}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => remove(index)}
+                    >
                       <X className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
               ))}
             </div>
-
-            {watchQuestionType === "tof" && fields.length < 2 && (
-              <div className="text-sm text-muted-foreground">أسئلة صح أو خطأ تحتاج إجابتين فقط</div>
-            )}
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>إلغاء</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              إلغاء
+            </Button>
             <Button type="submit">حفظ التغييرات</Button>
           </div>
         </form>
@@ -506,6 +538,8 @@ const QuizEditDialog = ({ quiz }) => {
     </Dialog>
   );
 };
+
+
   // Answer Edit Dialog Component
   const AnswerEditDialog = ({ answer, questionId }) => {
     const [open, setOpen] = useState(false);
