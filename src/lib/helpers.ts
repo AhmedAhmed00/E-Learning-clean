@@ -24,3 +24,11 @@ export function prepareFormData(values: Record<string, any>): FormData {
 
   return formData;
 }
+
+export function compareChanges(values, dirtyFields) {
+  const changedValues = Object.keys(dirtyFields).reduce((acc, key) => {
+    acc[key] = values[key];
+    return acc;
+  }, {});
+  return changedValues;
+}

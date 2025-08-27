@@ -14,6 +14,7 @@ import StudentDetails from "./features/students/StudentDetails";
 import Ads from "./pages/Ads";
 import LectureOrders from "./pages/LectureOrders";
 import { EditAd } from "./components/forms/EditAd";
+import LecDetailsPage from "./features/courses/LecDetailsPage";
 
 
 // Lazy imports
@@ -38,6 +39,7 @@ const protectedRoutes = [
       { path: "orders/view/:id", element: <Orders viewModal={true} /> },
       { path: "students", element: <Students /> },
       { path: "students/view/:id", element: <StudentDetails /> },
+      { path: "course/lec/:id", element: <LecDetailsPage /> },
       { path: "employees", element: <Employees /> },
     
     ],

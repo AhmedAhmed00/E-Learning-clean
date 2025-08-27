@@ -6,6 +6,7 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import AuthProvider from './context/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/sonner"
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import  { Toaster as HoatToast } from 'react-hot-toast';
 
@@ -31,6 +32,7 @@ function AppRoutes() {
 
 
 
+
 function App() {
  
 
@@ -46,7 +48,8 @@ function App() {
       </AuthProvider>
    
       </BrowserRouter>
-      
+            <ReactQueryDevtools initialIsOpen={false} />
+
      </QueryClientProvider>
   
     </>

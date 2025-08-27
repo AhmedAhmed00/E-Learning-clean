@@ -173,6 +173,7 @@ export const ADS = `/employee/ads/`;
 export const INSCOURSES = `/course/simple-courses/`;
 export const CATEGORIES = `/course/categories/?paginated=false/`;
 export const LEC_ORDERS = `/course/student-orders-employee/`;
+export const LECTURES = `/course/simple-lectures/`;
 
 export const coursesServices = createService(COURSES);
 export const insCourses = createService(INSCOURSES);
@@ -185,5 +186,6 @@ export const overviewServices = createService(OVERVIEW);
 export const adsServices = createService(ADS);
 export const categoriesServices = createService(CATEGORIES);
 export const lecOrdersServices = createService(LEC_ORDERS);
+export const lecServices = createService(LECTURES);
 
 export default BASEURL;

@@ -191,17 +191,34 @@ export default function CourseDetails() {
             <div className="mt-6 space-y-4">
               {data?.lectures?.map((lecture) => (
                 <LectureCard
-                  key={lecture.id}
-                  number={lecture.number.toString()}
-                  title={lecture.title}
-                  description={`يشمل ${lecture.videos.length} فيديو و ${lecture.files.length} ملفات و ${lecture.quizzes.length} اختبارات`}
-                  duration="غير متوفرة"
-                  progress={0}
-                  status="منشورة"
-                  completed={false}
-                  id={lecture.id}
-                  attachments={lecture.files.length}
-                />
+  key={lecture.id}
+  id={lecture.id.toString()}
+  number={lecture.number.toString()}
+  title={lecture.title}
+  description={`يشمل ${lecture.videos?.length || 0} فيديو و ${lecture.files?.length || 0} ملفات و ${lecture.quizzes?.length || 0} اختبارات`}
+  duration="غير متوفرة"
+  progress={0}
+  status="منشورة"
+  completed={false}
+  paid={false}
+  attachments={lecture.files?.length || 0}
+  videos={lecture.videos}
+  files={lecture.files}
+  quizzes={lecture.quizzes}
+  active={lecture.active}
+  average_stars={lecture.average_stars}
+  total_ratings={lecture.total_ratings}
+  instructor_name={lecture.instructor_name}
+  price={lecture.price}
+  final_price={lecture.final_price}
+  is_offer={lecture.is_offer}
+  discount_percentage={lecture.discount_percentage}
+  total_students={lecture.total_students}
+  created_at={lecture.created_at}
+  updated_at={lecture.updated_at}
+  image={lecture.image}
+  category_name={lecture.category_name}
+/>
               ))}
             </div>
           </div>
