@@ -26,13 +26,15 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, PlusIcon, Trash2, Plus } from "lucide-react";
+import { Loader2, PlusIcon, Trash2, Plus, Pencil } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import usePost from "@/hooks/usePost";
-import { tachersServices } from "@/data/api";
+import { teachersServices } from "@/data/api";
 import { FileUploadValidationDemo } from "./Files";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { setServerErrors } from "@/lib/helpers";
+import useUpdate from "@/hooks/useUpdate";
 
 // ✅ Teacher Schema including new fields
 const teacherSchema = z.object({
@@ -45,10 +47,10 @@ const teacherSchema = z.object({
   specialization: z.string().min(2, "يجب إدخال التخصص"),
   password: z.string().min(6, "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل"),
   bio: z.string().min(3, "أدخل نبذة قصيرة"),
-  education: z.string().min(3, "يجب إدخال المؤهل التعليمي"),
-  experience: z.string().min(3, "يجب إدخال الخبرة"),
-  birth_date: z.string().min(1, "تاريخ الميلاد مطلوب").regex(/^\d{4}-\d{2}-\d{2}$/, "تاريخ الميلاد يجب أن يكون بصيغة YYYY-MM-DD"),
-  address: z.string().min(3, "يجب إدخال العنوان"),
+  education: z.string().min(3, "يجب إدخال المؤهل التعليمي").nullable(),
+  experience: z.string().min(3, "يجب إدخال الخبرة").nullable(),
+  birth_date: z.string().min(1, "تاريخ الميلاد مطلوب").regex(/^\d{4}-\d{2}-\d{2}$/, "تاريخ الميلاد يجب أن يكون بصيغة YYYY-MM-DD").nullable(),
+  address: z.string().min(3, "يجب إدخال العنوان").nullable(),
   image: z.instanceof(File, { error: "صورة المدرس مطلوبة" }),
   id_image: z.instanceof(File, { error: "صورة هوية المدرس مطلوبة" }),
   certificates: z.array(
@@ -59,12 +61,41 @@ const teacherSchema = z.object({
   ).min(1, "يجب إضافة شهادة واحدة على الأقل"),
 });
 
-type TeacherFormValues = z.infer<typeof teacherSchema>;
+export type TeacherFormValues = z.infer<typeof teacherSchema>;
+const teacherUpdateSchema = teacherSchema.partial().extend({
+    image: z
+      .union([
+        z.instanceof(File, { message: "صورة مطلوبة" }),
+        z.string().url("رابط الصورة غير صالح"),
+      ])
+      .optional(),
+    id_image: z
+      .union([
+        z.instanceof(File, { message: "صورة مطلوبة" }),
+        z.string().url("رابط الصورة غير صالح"),
+      ])
+      .optional(),
+    certificates: z
+      .array(
+        z.object({
+          title: z.string().optional(),
+          image: z
+            .union([
+              z.instanceof(File, { message: "صورة مطلوبة" }),
+              z.string().url("رابط الصورة غير صالح"),
+            ])
+            .optional(),
+        })
+      )
+      .optional(),
+  });
 
-export function TeacherForm() {
+
+export function TeacherForm({mode ,teacher}:{mode?:string,
+   teacher?:TeacherFormValues}) {
   const form = useForm<TeacherFormValues>({
-    resolver: zodResolver(teacherSchema),
-    defaultValues: {
+    resolver: mode==="update" ? zodResolver(teacherUpdateSchema) : zodResolver(teacherSchema),
+    defaultValues:  {
       name: "",
       email: "",
       phone: "",
@@ -87,14 +118,39 @@ export function TeacherForm() {
   });
 
   const [openModal, setOpenModal] = useState(false);
+  
+  
+  
+  
+  
+  
+  useEffect(()=>{
+    if(mode === "update" && Object.keys(teacher).length && openModal){ 
+      form.reset({...teacher, 
+        name:teacher?.user_name, 
+        email:teacher?.user_email, 
+        phone:teacher?.user_phone, 
+        education:teacher?.education,
+        experience:teacher?.experience,  
+        certificates:teacher?.certificates,  
+        
+      })
+      console.log(teacher ,"currrent");
+    }
+  } ,[teacher,form,mode,openModal])
 
   const { mutate: addTeacher, isPending } = usePost({
-    service: tachersServices.create,
+    service: teachersServices.create,
+    key: "teachers",
+    resource: "المدرس",
+  });
+  const { mutate: updateTeacher  } = useUpdate({
+    service: teachersServices.update,
     key: "teachers",
     resource: "المدرس",
   });
 
-  console.log(form.formState.errors);
+  
 
   function onSubmit(values: TeacherFormValues) {
     const formData = new FormData();
@@ -109,31 +165,50 @@ export function TeacherForm() {
     formData.append("birth_date", values.birth_date);
     formData.append("address", values.address);
 
-    if (values.image) formData.append("image", values.image);
-    if (values.id_image) formData.append("id_image", values.id_image);
+    if (values.image && typeof values.image !== "string") formData.append("image", values.image);
+    if (values.id_image && typeof values.image !== "string") formData.append("id_image", values.id_image);
 
     // Add certificates
     values.certificates.forEach((cert, index) => {
       formData.append(`certificates[${index}][title]`, cert.title);
-      if (cert.image) formData.append(`certificates[${index}][image]`, cert.image);
+      if (cert.image && typeof cert.image !== "string") formData.append(`certificates[${index}][image]`, cert.image);
     });
 
     // send FormData to your usePost hook
-    addTeacher(formData, {
+    
+    if(mode === "update"){ 
+       updateTeacher({id:teacher.id , body:formData}, {
       onSuccess: () => {
         setOpenModal(false);
         form.reset(); // optional: reset form after adding
       },
+      onError:(err) => setServerErrors(err,form.setError)
     });
+    }
+    else{ 
+         addTeacher(formData, {
+      onSuccess: () => {
+        setOpenModal(false);
+        form.reset(); // optional: reset form after adding
+      },
+      onError:(err) => setServerErrors(err,form.setError)
+    });
+    }
+ 
   }
 
   return (
     <Dialog onOpenChange={setOpenModal} open={openModal}>
       <DialogTrigger asChild>
-        <Button className="text-[16px] px-1" style={{ cursor: "pointer" }}>
+        
+        {mode==='update' ? <Button className="text-[16px] bg-yellow-500 px-1" style={{ cursor: "pointer" }}>
+          <Pencil  />
+        </Button>: <Button  className="text-[16px]  px-1" style={{ cursor: "pointer" }}>
           <PlusIcon />
           إضافة مدرس جديد
-        </Button>
+        </Button> }
+        
+      
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
@@ -404,15 +479,15 @@ export function TeacherForm() {
                 </Button>
               </DialogClose>
               <Button type="submit" disabled={isPending}>
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    جاري إضافة المدرس{" "}
-                  </>
-                ) : (
-                  "إضافة مدرس"
-                )}
-              </Button>{" "}
+  {isPending ? (
+    <>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      {mode === "update" ? "جاري تعديل المدرس" : "جاري إضافة المدرس"}
+    </>
+  ) : (
+    mode === "update" ? "تعديل مدرس" : "إضافة مدرس"
+  )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

@@ -13,7 +13,7 @@ import { CourseCard, type CardItem } from "@/features/courses/CourseCard";
 import TableOperations from "@/components/shared/table/TableOperations";
 import { CourseForm } from "@/components/forms/CourseForm";
 import { useFetch } from "@/hooks/useFetch";
-import { coursesServices, insCourses } from "@/data/api";
+import { coursesServices, insCoursesServices, studentsInsServices } from "@/data/api";
 
 // 📊 بيانات الكروت الصغيرة (Dashboard)
 
@@ -27,7 +27,7 @@ export default function Courses() {
   
   
   const {data:{results,statistics,count}={}} = useFetch({ 
-    service: localStorage.getItem("role") === 'employee'? coursesServices.getAll:insCourses.getAll ,
+    service: localStorage.getItem("role") === 'employee'? coursesServices.getAll:insCoursesServices.getAll ,
     key:"courses"
   })
   

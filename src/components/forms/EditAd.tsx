@@ -48,7 +48,7 @@ const adSchema = z.object({
   status: z.enum(["active", "inactive"], {
     required_error: "حالة الإعلان مطلوبة",
   }),
-  // image: z.instanceof(Fil e, { error: "صورة الإعلان مطلوبة" }).optional(),
+  image: z.any().optional(),
 });
 
 type AdFormValues = z.infer<typeof adSchema>;
@@ -60,6 +60,10 @@ export function EditAd() {
   const { state } = useLocation();
 
   const adToEdit = state?.item;
+  
+  
+  
+  console.log(adToEdit.image,"adToed");
 
 
   const [openModal, setOpenModal] = useState(isEditMode);
@@ -69,9 +73,11 @@ export function EditAd() {
     defaultValues: {
       name: adToEdit?.name || "",
       status: adToEdit?.status || "active",
-      image: undefined,
+      image: adToEdit?.image,
     },
   });
+  
+  console.log(form.getFieldState("image" ,"image fil"));
 
   const { mutate: createAd, isPending: creating } = usePost({
     service: adsServices.create,

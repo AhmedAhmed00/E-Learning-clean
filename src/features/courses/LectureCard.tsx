@@ -22,6 +22,7 @@ import {
   FileText,
   Video,
   HelpCircle,
+  PlusIcon,
 } from "lucide-react";
 import { VideoForm } from "./VidToLecForm";
 import { PdfToLecForm } from "./PdfToLecForm";
@@ -210,7 +211,13 @@ export function LectureCard(props: LectureCardProps) {
             <div className="flex flex-wrap gap-2 mb-4">
               <VideoForm />
               <PdfToLecForm lecture_id={id} />
-              <QuizToLecForm lecture_id={id} />
+              <Link to={`/courses/${id}/add-quiz-to-lec`} > 
+              <Button className="text-[16px] px-1">
+              
+          <PlusIcon />
+          إضافة اختبار كامل
+        </Button>
+              </Link>
             </div>
 
             {/* toggle details */}

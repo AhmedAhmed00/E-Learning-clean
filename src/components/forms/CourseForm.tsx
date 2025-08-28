@@ -30,24 +30,37 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusIcon, PencilIcon } from "lucide-react"
 import { FileUploadValidationDemo } from "./Files"
 import usePost from "@/hooks/usePost"
-import { categoriesServices, insCourses, tachersServices } from "@/data/api"
+import { categoriesServices, insCoursesServices, teachersServices } from "@/data/api"
 import { useFetch } from "@/hooks/useFetch"
 import useUpdate from "@/hooks/useUpdate"
 import { DevTool } from "@hookform/devtools"
 
 // ✅ Schema
+const role = localStorage.getItem("role")
+
 const courseSchema = z.object({
   category: z.string().min(1, "اختر التصنيف"),
-  teacher: z.string().min(1, "اختر المدرس"), // 👈 teacher مستقل
-  title: z.string().min(3, "يجب أن يحتوي العنوان على 3 أحرف على الأقل"),
+ instructor: z.string().optional().refine(
+    (val) => {
+      if (role === "employee") {
+        return !!val && val.trim().length > 0
+      }
+      return true
+    },
+    { message: "اختر المدرس" }
+  ),  title: z.string().min(3, "يجب أن يحتوي العنوان على 3 أحرف على الأقل"),
   description: z.string().min(10, "الوصف قصير جدًا"),
   price: z.string().refine((val) => !isNaN(Number(val)), { message: "السعر يجب أن يكون رقم" }),
   discount_percentage: z
     .string()
     .optional()
     .refine((val) => !val || !isNaN(Number(val)), { message: "يجب أن يكون رقم" }),
-  image: z.instanceof(File, { error: "صورة الكورس مطلوبة" }),
-})
+ image: z
+    .union([
+      z.instanceof(File, { message: "صورة الكورس مطلوبة" }),
+      z.string().url().min(1, "صورة الكورس مطلوبة"),
+    ])
+    .optional(),})
 
 type CourseFormValues = z.infer<typeof courseSchema>
 
@@ -59,7 +72,7 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
     resolver: zodResolver(courseSchema),
     defaultValues: {
       category: "",
-      teacher: "", // 👈 default teacher
+      instructor: "", // 👈 default teacher
       title: "",
       description: "",
       price: "",
@@ -68,14 +81,18 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
     },
   })
 
+  
+  console.log(form.formState.errors)
+  
   // reset when defaultValues change (for edit mode)
   useEffect(() => {
     if (defaultValues) {
       form.reset({
         ...defaultValues,
         category: String(defaultValues?.category ?? ""),
-        teacher: String(defaultValues?.teacher ?? ""),
+        instructor: String(defaultValues?.instructor ?? ""),
         discount_percentage: String(defaultValues?.discount_percentage ?? ""),
+        image: defaultValues?.image ?? "",
       })
     }
   }, [defaultValues, form])
@@ -86,39 +103,48 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
   })
 
   const { data: { results: resultsOfTeachers } = {} } = useFetch({
-    service: tachersServices.getAll,
+    service: teachersServices.getAll,
     key: "teachers",
+    enabled:Boolean(localStorage.getItem("role") === 'employee')
   })
 
   const { mutate: addCourse } = usePost({
-    service: insCourses.create,  
+    service: insCoursesServices.create,  
     key: "courses",
     resource: "course",
   })
 
   const { mutate: updateCourse } = useUpdate({
-    service: insCourses.update,
+    service: insCoursesServices.update,
     key: "courses",
-    resource: "course",
+    resourse: "course",
   })
 
+  
+
+
+
+
+  
+  
   function onSubmit(values: CourseFormValues) {
     const formData = new FormData()
     formData.append("category", values.category)
-    formData.append("instructor", values.teacher) 
+    formData.append("instructor", values.instructor) 
     formData.append("title", values.title)
     formData.append("description", values.description)
     formData.append("price", values.price)
     if (values.discount_percentage) {
       formData.append("discount_percentage", values.discount_percentage)
     }
-    if (values.image?.[0]) {
-      formData.append("image", values.image[0])
+    if (values.image&& typeof values.image!== "string") {
+      formData.append("image", values.image)
     }
+    
 
     if (isEditMode && defaultValues?.id) {
       updateCourse(
-        { id: defaultValues.id, data: formData },
+        { id: defaultValues.id, body: formData },
         { onSuccess: () => setOpen(false) }
       )
     } else {
@@ -196,30 +222,32 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
               />
 
               {/* Teacher */}
-              <FormField
-                control={form.control}
-                name="instructor"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>المدرس</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر المدرس" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {resultsOfTeachers?.map((t: { id: number; user_name: string }) => (
-                          <SelectItem key={t.id} value={String(t.id)}>
-                            {t.user_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+         {role === "employee" && (
+  <FormField
+    control={form.control}
+    name="instructor"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>المدرس</FormLabel>
+        <Select onValueChange={field.onChange} value={field.value}>
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="اختر المدرس" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {resultsOfTeachers?.map((t: { id: number; user_name: string }) => (
+              <SelectItem key={t.id} value={String(t.id)}>
+                {t.user_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)}
 
               {/* Description */}
               <FormField
@@ -271,6 +299,7 @@ export function CourseForm({ defaultValues }: { defaultValues?: Partial<CourseFo
                 <FileUploadValidationDemo
                   title="صورة الكورس"
                   control={form.control}
+                  
                   name="image"
                 />
               </div>

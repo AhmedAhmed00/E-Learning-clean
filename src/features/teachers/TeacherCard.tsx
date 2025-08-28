@@ -19,11 +19,12 @@ import {
   User,
   Clock,
   Trash2,
-  Pencil,
   Eye,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
+import { TeacherForm } from "@/components/forms/TeacherForm";
 
 
 
@@ -73,21 +74,26 @@ export function TeacherCard({ teacher }: { teacher: any }) {
 
         {/* المحتوى */}
         <CardContent className="px-4 pt-4 space-y-2">
-          <h3 className="text-lg font-bold">{teacher.bio || "لا يوجد نبذة"}</h3>
+          <h3 className="text-lg font-bold">{teacher.user_name || "لا يوجد نبذة"}</h3>
+          <p className="text-sm text-slate-600 ">{teacher.bio || "لا يوجد نبذة"}</p>
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-1">
-              <User className="w-4 h-4" /> {teacher.user_name}
-            </div>
+          
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" /> {teacher.num_of_courses} كورس
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" /> {teacher.num_of_students} طالب
             </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" /> {teacher.user_created_at &&
+  new Date(teacher.user_created_at).toLocaleDateString("ar-EG", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  })}
+            </div>
           </div>
-        </CardContent>
-        <CardContent className="px-4 space-y-2">
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" /> {teacher.user_email}
             </div>
@@ -96,6 +102,7 @@ export function TeacherCard({ teacher }: { teacher: any }) {
             </div>
           </div>
         </CardContent>
+       
 
         {/* الأزرار */}
         <CardFooter className="flex items-center justify-between p-4 border-t">
@@ -109,7 +116,11 @@ export function TeacherCard({ teacher }: { teacher: any }) {
               <Trash2 className="w-4 h-4" />
             </Button>
             <Button size="icon" variant="outline">
-              <Pencil className="w-4 h-4" />
+              {/* <Pencil className="w-4 h-4" /> */}
+              
+              <TeacherForm teacher={teacher} mode={"update"} />
+              
+              
             </Button>
           </div>
           <Link to={`${teacher?.id}`} > 

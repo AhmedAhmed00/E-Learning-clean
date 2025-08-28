@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
@@ -37,8 +37,9 @@ import usePost from "@/hooks/usePost";
 const lectureSchema = z.object({
   title: z.string().min(3, "عنوان المحاضرة مطلوب"),
   description: z.string().min(5, "الوصف مطلوب"),
-  type: z.enum(["free", "paid"], { required_error: "اختر نوع المحاضرة" }),
-  price: z.string().optional(),
+type: z.enum(["free", "paid"]).refine((val) => val !== undefined, {
+  message: "اختر نوع المحاضرة",
+}),  price: z.string().optional(),
 }).refine((data) => {
   if (data.type === "paid" && (!data.price || isNaN(Number(data.price)))) {
     return false;
@@ -51,7 +52,7 @@ const lectureSchema = z.object({
 
 type LectureFormValues = z.infer<typeof lectureSchema>;
 
-export function LectureForm({ id: course_id }: { id: number }) {
+export function LectureForm({ id: course_id }: { id: string }) {
   const [openModal, setOpenModal] = useState(false);
 
   const form = useForm<LectureFormValues>({
@@ -67,7 +68,7 @@ export function LectureForm({ id: course_id }: { id: number }) {
   const { mutate: addLecture, isPending } = usePost({
     service: (body) =>
       apiRequest("post", `${BASEURL}/course/simple-lectures/`, body),
-    key: "lectures",
+    key: "course",
     resource: "المحاضرة",
   });
 

@@ -1,6 +1,6 @@
 import Heading from "@/components/shared/Heading"
 import RoundedCard from "@/components/shared/rounded-card"
-import { tachersServices } from "@/data/api"
+import { teachersServices } from "@/data/api"
 import useFetchById from "@/hooks/useFetchById"
 
 
@@ -50,7 +50,7 @@ export default function TeacherDetails() {
   const { data, isLoading, isError } = useFetchById<Teacher>(
     "teacher",
     teacherId,
-    tachersServices.getById
+    teachersServices.getById
   )
 
   if (isLoading) return <div>Loading...</div>

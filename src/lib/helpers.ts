@@ -32,3 +32,19 @@ export function compareChanges(values, dirtyFields) {
   }, {});
   return changedValues;
 }
+
+export function setServerErrors(error, setError) {
+  if (error?.data) {
+    Object.keys(error.data).forEach((field) => {
+      const fieldError = error.data[field];
+
+      // Extract `detail` if it's an object
+      const errorMessage =
+        typeof fieldError === "object" && fieldError.detail
+          ? fieldError.detail
+          : fieldError || "Unknown error";
+
+      setError(field, { type: "server", message: errorMessage });
+    });
+  }
+}

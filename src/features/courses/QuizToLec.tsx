@@ -26,6 +26,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, PlusIcon } from "lucide-react";
 import BASEURL, { apiRequest } from "@/data/api";
+import { useNavigate, useParams } from "react-router";
+import toast from "react-hot-toast";
 
 // ✅ Zod schema
 const answerSchema = z.object({
@@ -50,9 +52,11 @@ const quizSchema = z.object({
 
 type QuizFormValues = z.infer<typeof quizSchema>;
 
-export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
+export function QuizToLecForm() {
+  const {lectureId:lecture_id} = useParams()
   const [openModal, setOpenModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate()
 
   const form = useForm<QuizFormValues>({
     resolver: zodResolver(quizSchema),
@@ -63,7 +67,7 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
       questions: [],
     },
   });
-
+console.log(lecture_id,"lecture_id");
   const {
     fields: questionFields,
     append: appendQuestion,
@@ -119,8 +123,12 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
       await apiRequest("post", `${BASEURL}/course/simple-quizzes/`, payload);
 
       form.reset();
+      toast.success("تم إضافة الإختبار بنجاح")
+      navigate(`/course/lec/${lecture_id}`)
       setOpenModal(false);
     } catch (err) {
+            toast.error("حدث خطأ, تأكد من ان البيانات صحيحة")
+
       console.error("Error creating quiz:", err);
     } finally {
       setIsSubmitting(false);
@@ -128,21 +136,10 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
   };
 
   return (
-    <Dialog onOpenChange={setOpenModal} open={openModal}>
-      <DialogTrigger asChild>
-        <Button className="text-[16px] px-1">
-          <PlusIcon />
-          إضافة اختبار كامل
-        </Button>
-      </DialogTrigger>
+ 
 
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>إضافة اختبار مع الأسئلة والإجابات</DialogTitle>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Form  {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-8">
             <FormField
               control={form.control}
               name="title"
@@ -253,13 +250,10 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
             <Button type="button" variant="secondary" onClick={handleAddQuestion}>
               + إضافة سؤال
             </Button>
-
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
+<div className="mt-5 flex gap-3 "> 
+    <Button type="button" variant="outline">
                   إلغاء
                 </Button>
-              </DialogClose>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
@@ -270,10 +264,12 @@ export function QuizToLecForm({ lecture_id }: { lecture_id: number }) {
                   "إنشاء الاختبار"
                 )}
               </Button>
-            </DialogFooter>
+</div>
+       
+              
+      
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+   
   );
 }

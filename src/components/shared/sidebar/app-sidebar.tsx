@@ -29,6 +29,12 @@ import {
   VideoIcon, // Search
 } from "lucide-react";
 
+
+
+const role = localStorage.getItem("role")
+
+
+
 const data = {
   user: {
     name: "shadcn",
@@ -46,11 +52,22 @@ const data = {
       url: "/courses",
       icon: BookOpen,
     },
-    {
-      title: "المدرسين",
-      url: "/teachers",
-      icon: Users,
-    },
+    
+    
+    
+        ...(role === "employee"
+      ? [
+          {
+            title: "المدرسين",
+            url: "/teachers",
+            icon: Users,
+          },
+        ]
+      : []),
+
+    
+    
+    
     {
       title: "الطلبات",
       url: "/orders",
@@ -61,22 +78,28 @@ const data = {
       url: "/students",
       icon: GraduationCap,
     },
+     ...(role === "employee"
+      ? [
+         {
+      title: "الموظفين",
+      url: "/employees",
+      icon: Briefcase,
+    },
+
+        ]
+      : []),
 
     {
       title: "الإعلانات",
       url: "/ads",
       icon: Tv2,
     },
-    {
-      title: "الموظفين",
-      url: "/employees",
-      icon: Briefcase,
-    },
-    {
-      title: "الإعدادات",
-      url: "/settings",
-      icon: Settings,
-    },
+    
+    // {
+    //   title: "الإعدادات",
+    //   url: "/settings",
+    //   icon: Settings,
+    // },
   ],
 
   navSecondary: [
@@ -84,6 +107,7 @@ const data = {
   
   ],
 };
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (

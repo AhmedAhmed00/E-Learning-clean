@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Heading from "@/components/shared/Heading";
 import TableOperations from "@/components/shared/table/TableOperations";
-import { tachersServices } from "@/data/api";
+import { teachersServices } from "@/data/api";
 import { TeacherForm } from "@/components/forms/TeacherForm";
 import { TeacherCard } from "@/features/teachers/TeacherCard";
 import { useFetch } from "@/hooks/useFetch";
@@ -16,7 +16,7 @@ import { useFetch } from "@/hooks/useFetch";
 
 export default function Teachers() {
   const { data: { results: teachers = [], count } = {}, isLoading } = useFetch({
-    service:  tachersServices.getAll,
+    service:  teachersServices.getAll,
     key: "teachers",
   });
 

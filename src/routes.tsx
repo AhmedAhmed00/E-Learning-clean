@@ -12,9 +12,11 @@ import TeacherDetails from "./features/teachers/TeacherDetails";
 import CourseDetails from "./features/courses/CourseDetails";
 import StudentDetails from "./features/students/StudentDetails";
 import Ads from "./pages/Ads";
+import Unauthorized from "./pages/Unauthorized";
 import LectureOrders from "./pages/LectureOrders";
 import { EditAd } from "./components/forms/EditAd";
 import LecDetailsPage from "./features/courses/LecDetailsPage";
+import { QuizToLecForm } from "./features/courses/QuizToLec";
 
 
 // Lazy imports
@@ -40,6 +42,7 @@ const protectedRoutes = [
       { path: "students", element: <Students /> },
       { path: "students/view/:id", element: <StudentDetails /> },
       { path: "course/lec/:id", element: <LecDetailsPage /> },
+      { path: "courses/:lectureId/add-quiz-to-lec", element: <QuizToLecForm /> },
       { path: "employees", element: <Employees /> },
     
     ],
@@ -48,6 +51,7 @@ const protectedRoutes = [
 
 const publicRoutes = [
   { path: "login", element: <Login/> },
+  { path: "unauthorized", element: <Unauthorized/> },
 
 ];
 

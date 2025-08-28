@@ -12,7 +12,7 @@ import RoundedCard from "@/components/shared/rounded-card";
 import CustomTable from "@/components/shared/table/CustomTable";
 import { StudentForm } from "@/components/forms/StudentForm";
 import { useFetch } from "@/hooks/useFetch";
-import { studentsServices } from "@/data/api";
+import { studentsInsServices, studentsServices } from "@/data/api";
 import Pagination from "@/components/shared/table/Pagination.jsx";
 
 // 📋 أعمدة جدول الطلاب
@@ -49,13 +49,16 @@ const studentsTableColumns = [
 
 export default function Students() {
 
+  
+  const role = localStorage.getItem("role")
 
   
-  const {data:{results,count}={}, isLoading } = useFetch({ 
-    service:studentsServices.getAll, 
+  const { data,data:{results,count}={}, isLoading ,isError } = useFetch({ 
+    service: role === "employee" ?  studentsServices.getAll: studentsInsServices.getAll, 
     key:"students",
   
   })
+  console.log(data);
   const studentStats = [
   {
     id: 1,

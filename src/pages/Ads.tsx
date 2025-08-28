@@ -1,5 +1,4 @@
 import { AdForm } from "@/components/forms/AdForm";
-import { CourseForm } from "@/components/forms/CourseForm";
 import Heading from "@/components/shared/Heading";
 import CustomTable from "@/components/shared/table/CustomTable";
 import { adsServices } from "@/data/api";

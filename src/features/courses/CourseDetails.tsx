@@ -1,13 +1,12 @@
-import { BookOpen, Star, Clock, Users } from "lucide-react";
+import { BookOpen, Star, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import Heading from "@/components/shared/Heading";
 import { CourseHeading } from "./CourseHeading";
 import { LectureCard } from "./LectureCard";
-import { LectureForm } from "@/components/forms/LectureForm";
 import useFetchById from "@/hooks/useFetchById";
 import { useParams } from "react-router";
-import { coursesServices, insCourses } from "@/data/api";
+import { coursesServices, insCoursesServices } from "@/data/api";
 import CustomTable from "@/components/shared/table/CustomTable";
 
 // --- Interfaces ---
@@ -31,6 +30,19 @@ interface Course {
   image: string | null;
   active: boolean;
   category_name: string;
+
+  // ✅ add students list for CustomTable
+  students_details?: Student[];
+}
+
+interface Student {
+  student_id: number;
+  student_image: string;
+  education_type: string;
+  student_name: string;
+  student_email: string;
+  price: string;
+  purchased_at: string;
 }
 
 interface Lecture {
@@ -40,6 +52,21 @@ interface Lecture {
   videos: Video[];
   files: LectureFile[];
   quizzes: Quiz[];
+
+  // ✅ add all fields you pass to <LectureCard />
+  active: boolean;
+  average_stars: number;
+  total_ratings: number;
+  instructor_name: string;
+  price: string;
+  final_price: number;
+  is_offer: boolean;
+  discount_percentage: number;
+  total_students: number;
+  created_at: string;
+  updated_at: string;
+  image: string;
+  category_name: string;
 }
 
 interface Video {
@@ -97,7 +124,7 @@ const studentCols = [
 // --- Main Component ---
 export default function CourseDetails() {
   const { id } = useParams();
-  const { data, isLoading, error } = useFetchById<Course>("course", id,  localStorage.getItem("role") ==="employee"?    coursesServices.getById : insCourses.getById);
+  const { data, isLoading, error } = useFetchById<Course>("course", id,  localStorage.getItem("role") ==="employee"?    coursesServices.getById : insCoursesServices.getById);
   
   
   
@@ -229,7 +256,7 @@ export default function CourseDetails() {
           <Card className="p-6 rounded-2xl shadow-md text-center">
             
             
-            <CustomTable modalName={"students"}  actions={['view']} columns={studentCols} data={data?.students_details} />
+            <CustomTable loading={isLoading} modalName={"students"}  actions={['view']} columns={studentCols} data={data?.students_details} />
             
           </Card>
         </TabsContent>

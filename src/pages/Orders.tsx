@@ -25,7 +25,7 @@ import TableOperations from "@/components/shared/table/TableOperations";
 import RoundedCard from "@/components/shared/rounded-card";
 import CustomTable from "@/components/shared/table/CustomTable";
 import { useFetch } from "@/hooks/useFetch";
-import BASEURL, { apiRequest, ordersServices } from "@/data/api";
+import BASEURL, { apiRequest, ordersInsServices, ordersServices } from "@/data/api";
 import useFetchById from "@/hooks/useFetchById";
 import { useNavigate, useParams } from "react-router";
 
@@ -98,9 +98,11 @@ interface CourseOrder {
 
 export default function Orders({ viewModal }: { viewModal?: boolean }) {
   const navigate = useNavigate();
+  const role= localStorage.getItem("role")
 
   const { data, isError, isFetching, isLoading } = useFetch({
-    service: ordersServices.getAll,
+    service: role === "employee" ? 
+    ordersServices.getAll : ordersInsServices.getAll ,
     key: "orders",
   });
 
@@ -109,7 +111,8 @@ export default function Orders({ viewModal }: { viewModal?: boolean }) {
   const { data: orderDetails } = useFetchById<CourseOrder>(
     "order",
     id,
-    ordersServices.getById,
+    role == "employee" ? 
+    ordersServices.getById :ordersInsServices.getById ,
   );
   const showModal = Boolean(id && orderDetails);
 

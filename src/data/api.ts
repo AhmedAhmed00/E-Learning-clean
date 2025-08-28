@@ -95,7 +95,7 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 403) {
-      window.location.href = "/unauthorized";
+      // window.location.href = "/unauthorized";
     }
 
     return Promise.reject(error);
@@ -161,12 +161,14 @@ export function createService<T>(baseUrl: string) {
 }
 
 // ✅ Example Service Types
-
 export const COURSES = `/course/employee-manage/`;
+export const COURSES_INS = `/course/instructor-manage/`;
 export const EMPLOYEES = `/employee/manage/`;
 export const STUDENTS = `/students/manage/`;
+export const STUDENTS_INS = `/instructor/my-students/`; // لاحظ شلت الـ // الزايدة
 export const TEACHERS = `/instructor/manage/`;
 export const ORDERS = `/course/student-orders-employee/`;
+export const ORDERS_INS = `/course/student-orders-instructor/`;
 export const ROLES = `/employee/groups-with-permissions/`;
 export const OVERVIEW = `/dashboard/overview/`;
 export const ADS = `/employee/ads/`;
@@ -175,12 +177,15 @@ export const CATEGORIES = `/course/categories/?paginated=false/`;
 export const LEC_ORDERS = `/course/student-orders-employee/`;
 export const LECTURES = `/course/simple-lectures/`;
 
+// ✅ Services
 export const coursesServices = createService(COURSES);
-export const insCourses = createService(INSCOURSES);
+export const insCoursesServices = createService(INSCOURSES);
 export const employeesServices = createService(EMPLOYEES);
 export const studentsServices = createService(STUDENTS);
-export const tachersServices = createService(TEACHERS);
+export const studentsInsServices = createService(STUDENTS_INS); // مضاف جديد
+export const teachersServices = createService(TEACHERS);
 export const ordersServices = createService(ORDERS);
+export const ordersInsServices = createService(ORDERS_INS); // مضاف جديد
 export const rolesServices = createService(ROLES);
 export const overviewServices = createService(OVERVIEW);
 export const adsServices = createService(ADS);

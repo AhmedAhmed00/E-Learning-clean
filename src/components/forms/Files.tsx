@@ -27,7 +27,6 @@ export function FileUploadValidationDemo({ title, control, name }: FileUploadVal
       name={name}
       render={({ field, fieldState }) => {
         const [files, setFiles] = React.useState<File[]>(field.value ? [field.value] : []);
-
         const onFileValidate = React.useCallback(
           (file: File): string | null => {
             if (files.length >= 1) return "You can only upload up to 1 file";

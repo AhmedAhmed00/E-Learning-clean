@@ -21,9 +21,10 @@ import useFetchById from "@/hooks/useFetchById";
 export default function LecDetailsPage() {
   const { state } = useLocation();
 //   const lecture = state?.lecture;
+  console.log(state?.lecture.id,"state?.lecture.id")
+  const {id} = useParams()
   
-  
-  const {data:lecture} = useFetchById("lecture" , state?.lecture.id, lecServices.getById)
+  const {data:lecture} = useFetchById("lecture" , id || state?.lecture.id, lecServices.getById)
   if (!lecture) {
     return (
       <div className="min-h-screen flex items-center justify-center">
