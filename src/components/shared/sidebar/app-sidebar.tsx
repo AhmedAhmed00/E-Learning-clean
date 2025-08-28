@@ -31,11 +31,15 @@ import {
 
 
 
-const role = localStorage.getItem("role")
 
 
 
-const data = {
+
+
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+const [role,setRole] = React.useState(()=>localStorage.getItem("role") )
+  const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
@@ -107,9 +111,6 @@ const data = {
   
   ],
 };
-
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
       dir="rtl"

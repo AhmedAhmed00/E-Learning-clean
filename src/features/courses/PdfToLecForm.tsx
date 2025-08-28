@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, PlusIcon } from "lucide-react";
 import BASEURL, { apiRequest } from "@/data/api";
 import usePost from "@/hooks/usePost";
+import { useNavigate } from "react-router";
 
 // ✅ Updated schema for file upload
 const pdfUploadSchema = z.object({
@@ -43,6 +44,7 @@ type PdfFormValues = z.infer<typeof pdfUploadSchema>;
 
 export function PdfToLecForm({ lecture_id }: { lecture_id: number }) {
   const [openModal, setOpenModal] = useState(false);
+const navigate = useNavigate()
 
   const form = useForm<PdfFormValues>({
     resolver: zodResolver(pdfUploadSchema),
@@ -58,14 +60,14 @@ export function PdfToLecForm({ lecture_id }: { lecture_id: number }) {
         headers: { "Content-Type": "multipart/form-data" },
         isFormData: true,
       }),
-    key: "lecture-pdfs",
+    key: "course",
     resource: "الملف",
   });
 
   function onSubmit(values: PdfFormValues) {
     const formData = new FormData();
     formData.append("title", values.title);
-    formData.append("lecture_id", String(lecture_id));
+    formData.append("lecture", String(lecture_id));
     formData.append("file", values.file);
 
     uploadPdf(formData, {
@@ -126,7 +128,7 @@ export function PdfToLecForm({ lecture_id }: { lecture_id: number }) {
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="button" variant="outline">
+                <Button  type="button" variant="outline">
                   إلغاء
                 </Button>
               </DialogClose>

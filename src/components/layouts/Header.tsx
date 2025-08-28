@@ -11,13 +11,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function SiteHeader() {
+ const queryClient = useQueryClient();
+
   const handleLogout = () => {
+    // ✅ Clear React Query cache
+    queryClient.clear();
+
+    // ✅ Clear localStorage (tokens, roles, etc.)
     localStorage.clear();
+
+    // ✅ Redirect to login
     window.location.href = "/login";
   };
-
   return (
     <header className="flex h-[var(--header-height)] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-[var(--header-height)]">
       <div className="flex w-full items-center justify-between gap-1 px-4 lg:gap-2 lg:px-6">

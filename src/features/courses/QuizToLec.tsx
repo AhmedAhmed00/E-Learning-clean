@@ -28,6 +28,7 @@ import { Loader2, PlusIcon } from "lucide-react";
 import BASEURL, { apiRequest } from "@/data/api";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 // ✅ Zod schema
 const answerSchema = z.object({
@@ -101,6 +102,8 @@ console.log(lecture_id,"lecture_id");
     }));
     form.setValue(`questions.${questionIndex}.answers`, updated);
   };
+  
+  const queryClient = useQueryClient()
 
   const onSubmit = async (data: QuizFormValues) => {
     setIsSubmitting(true);
@@ -124,6 +127,7 @@ console.log(lecture_id,"lecture_id");
 
       form.reset();
       toast.success("تم إضافة الإختبار بنجاح")
+queryClient.invalidateQueries({ queryKey: ["courses"] });
       navigate(`/course/lec/${lecture_id}`)
       setOpenModal(false);
     } catch (err) {
@@ -139,7 +143,7 @@ console.log(lecture_id,"lecture_id");
  
 
         <Form  {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-white p-8 rounded-2xl shadow-lg mt-8">
             <FormField
               control={form.control}
               name="title"
@@ -251,7 +255,7 @@ console.log(lecture_id,"lecture_id");
               + إضافة سؤال
             </Button>
 <div className="mt-5 flex gap-3 "> 
-    <Button type="button" variant="outline">
+    <Button onClick={()=> navigate(-1)} type="button" variant="outline">
                   إلغاء
                 </Button>
               <Button type="submit" disabled={isSubmitting}>

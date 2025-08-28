@@ -24,6 +24,10 @@ const loginSchema = z.object({
   phone: z.string().min(10, "رقم الهاتف غير صحيح"),
   password: z.string().min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل"),
 });
+// const loginSchema = z.object({
+//   phone: z.any(),
+//   password: z.any(),
+// });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
@@ -78,6 +82,7 @@ export default function Login() {
                             country={"eg"} // 🇪🇬 default Egypt
                             value={field.value}
                             onChange={(value) => field.onChange("+" + value)}
+                            // onChange={(value) => field.onChange( value)}
                             inputClass="!w-full !h-10 !text-base  !border !border-gray-300 !rounded-lg focus:!border-blue-500 focus:!ring-2 focus:!ring-blue-200"
                             buttonClass="!h-10 !border-gray-300 !rounded-l-lg"
                             containerClass="!w-full"
