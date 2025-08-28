@@ -65,7 +65,7 @@ export default function AuthProvider({ children }: { children: ReactElement }) {
     } catch (error) {
       const err = error as AxiosError<{ detail?: string }>;
 
-      if (err.response?.status === 401 || err.response?.status === 404) {
+      if (err.response?.status === 401 || err.response?.status === 400) {
         toast.error("من فضلك ادخل بيانات صحيحة");
       } else {
         toast.error(err.response?.data?.detail || "حدث خطأ غير متوقع");

@@ -98,7 +98,7 @@ export default function Students() {
           desc="مراجعة وإدارة بيانات الطلاب"
           icon={UserRound}
         />
-        {localStorage.getItem("role")=== "instructor"  &&<StudentForm /> } 
+        {/* {localStorage.getItem("role")=== "instructor"  &&<StudentForm /> }  */}
        
       </div>
 
